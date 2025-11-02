@@ -1,0 +1,6 @@
+/* Import TsungiAI design system */
+@import './styles/tsungi.css';
+
+#root {
+  min-height: 100vh;
+}

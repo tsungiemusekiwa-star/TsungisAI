@@ -1,0 +1,187 @@
+/* CometChat Theme Customization for Neumorphic Design */
+
+/* Override CometChat CSS Variables with our neumorphic theme */
+:root {
+  /* Primary colors matching our app */
+  --cometchat-primary-color: hsl(285, 60%, 68%);
+  --cometchat-secondary-color: hsl(285, 40%, 60%);
+
+  /* Background colors for light mode */
+  --cometchat-background-color: hsl(302, 19%, 90%);
+  --cometchat-surface-color: hsl(300, 17%, 88%);
+  --cometchat-card-color: hsl(300, 17%, 88%);
+
+  /* Text colors */
+  --cometchat-text-primary: hsl(0, 0%, 18%);
+  --cometchat-text-secondary: hsl(0, 0%, 40%);
+
+  /* Border and divider */
+  --cometchat-border-color: hsl(300, 17%, 80%);
+  --cometchat-divider-color: hsl(300, 17%, 85%);
+
+  /* Typography */
+  --cometchat-font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+
+  /* Neumorphic shadows */
+  --cometchat-shadow: 8px 8px 16px hsl(302, 19%, 82%), -8px -8px 16px hsl(302, 19%, 98%);
+  --cometchat-shadow-inset: inset 8px 8px 16px hsl(302, 19%, 82%), inset -8px -8px 16px hsl(302, 19%, 98%);
+}
+
+/* Dark mode overrides */
+.dark {
+  /* Primary colors remain consistent */
+  --cometchat-primary-color: hsl(285, 60%, 68%);
+  --cometchat-secondary-color: hsl(285, 40%, 60%);
+
+  /* Dark background colors */
+  --cometchat-background-color: hsl(260, 15%, 16%);
+  --cometchat-surface-color: hsl(260, 15%, 20%);
+  --cometchat-card-color: hsl(260, 15%, 20%);
+
+  /* Dark text colors */
+  --cometchat-text-primary: hsl(300, 20%, 88%);
+  --cometchat-text-secondary: hsl(300, 15%, 70%);
+
+  /* Dark borders */
+  --cometchat-border-color: hsl(260, 15%, 30%);
+  --cometchat-divider-color: hsl(260, 15%, 25%);
+
+  /* Dark neumorphic shadows */
+  --cometchat-shadow: 8px 8px 16px hsl(260, 20%, 8%), -8px -8px 16px hsl(260, 20%, 24%);
+  --cometchat-shadow-inset: inset 8px 8px 16px hsl(260, 20%, 8%), inset -8px -8px 16px hsl(260, 20%, 24%);
+}
+
+/* Apply neumorphic design to CometChat components */
+.cometchat {
+  font-family: var(--cometchat-font-family);
+}
+
+/* Conversation list styling */
+.cometchat__conversations,
+.cometchat__messagelist,
+.cometchat__messagecomposer {
+  background-color: var(--cometchat-surface-color) !important;
+  border-radius: 16px;
+  box-shadow: var(--cometchat-shadow);
+}
+
+/* Message bubbles */
+.cometchat__message-bubble {
+  border-radius: 16px !important;
+  box-shadow: var(--cometchat-shadow);
+}
+
+/* Sender messages (primary color) */
+.cometchat__message-bubble--sender {
+  background: var(--cometchat-primary-color) !important;
+  color: white !important;
+}
+
+/* Receiver messages */
+.cometchat__message-bubble--receiver {
+  background: var(--cometchat-card-color) !important;
+  color: var(--cometchat-text-primary) !important;
+  box-shadow: var(--cometchat-shadow-inset);
+}
+
+/* Input fields */
+.cometchat__input,
+.cometchat__textarea {
+  background: var(--cometchat-surface-color) !important;
+  border: 1px solid var(--cometchat-border-color) !important;
+  border-radius: 12px !important;
+  color: var(--cometchat-text-primary) !important;
+  box-shadow: var(--cometchat-shadow-inset);
+}
+
+/* Buttons */
+.cometchat__button--primary {
+  background: linear-gradient(145deg, hsl(285, 60%, 68%), hsl(285, 50%, 60%)) !important;
+  border: none !important;
+  border-radius: 12px !important;
+  box-shadow: var(--cometchat-shadow) !important;
+  color: white !important;
+}
+
+.cometchat__button--primary:hover {
+  box-shadow: var(--cometchat-shadow-inset) !important;
+}
+
+/* Headers */
+.cometchat__header {
+  background: var(--cometchat-surface-color) !important;
+  border-bottom: 1px solid var(--cometchat-border-color) !important;
+  border-radius: 16px 16px 0 0;
+}
+
+/* List items */
+.cometchat__listitem {
+  background: var(--cometchat-surface-color) !important;
+  border-radius: 12px !important;
+  margin: 4px 0;
+  transition: all 0.2s ease;
+}
+
+.cometchat__listitem:hover {
+  box-shadow: var(--cometchat-shadow);
+  transform: translateY(-1px);
+}
+
+/* Active list item */
+.cometchat__listitem--active {
+  background: var(--cometchat-primary-color) !important;
+  color: white !important;
+  box-shadow: var(--cometchat-shadow);
+}
+
+/* Scrollbars */
+.cometchat ::-webkit-scrollbar {
+  width: 8px;
+}
+
+.cometchat ::-webkit-scrollbar-track {
+  background: var(--cometchat-surface-color);
+  border-radius: 4px;
+}
+
+.cometchat ::-webkit-scrollbar-thumb {
+  background: var(--cometchat-primary-color);
+  border-radius: 4px;
+}
+
+.cometchat ::-webkit-scrollbar-thumb:hover {
+  background: var(--cometchat-secondary-color);
+}
+
+/* Typography */
+.cometchat * {
+  font-family: var(--cometchat-font-family) !important;
+}
+
+/* Remove default shadows and replace with neumorphic */
+.cometchat__card,
+.cometchat__modal,
+.cometchat__dropdown {
+  box-shadow: var(--cometchat-shadow) !important;
+  border-radius: 16px !important;
+  background: var(--cometchat-surface-color) !important;
+}
+
+/* Avatar styling */
+.cometchat__avatar {
+  box-shadow: var(--cometchat-shadow);
+}
+
+/* Status indicators */
+.cometchat__status--online {
+  background-color: hsl(142, 48%, 55%) !important;
+}
+
+.cometchat__status--offline {
+  background-color: hsl(0, 0%, 60%) !important;
+}
+
+/* Dividers */
+.cometchat__divider {
+  border-color: var(--cometchat-divider-color) !important;
+}
