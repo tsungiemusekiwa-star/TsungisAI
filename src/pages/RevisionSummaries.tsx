@@ -2,10 +2,11 @@ import type { ResultsStateType } from '@/types/revision-summaries.types';
 import { useState } from 'react';
 import PDFIcon from "@/assets/pdf-icon.png";
 import XLSXIcon from "@/assets/xlsx-icon.png";
+import { XlsxViewer } from '@/components/revision-summaries/xlsx-viewer';
 
 const RevisionSummaries = () => {
     const [resultsState, setResultsState] = useState<ResultsStateType>("success");
-
+    const [showViewer, setShowViewer] = useState<boolean>(false);
     // Load audio files from Firebase on component mount
     // useEffect(() => {
     //     loadAudioFiles();
@@ -79,11 +80,20 @@ const RevisionSummaries = () => {
                                 <p style={{ fontSize: "12px" }} className="text-muted-foreground">Recommendation - read before you go through ActEd notes</p>
                             </div>
 
-                            <div className='flex flex-col items-center justify-center text-center space-y-2'>
+                            <div
+                                onClick={() => {
+                                    setShowViewer(true);
+                                }}
+                                className='flex flex-col items-center justify-center text-center space-y-2'>
                                 <img style={{ height: "62px", width: "62px" }} src={XLSXIcon} alt="PDF File" />
                                 <p style={{ fontSize: "16px" }}>A311 Exam Handy Notes</p>
                                 <p style={{ fontSize: "12px" }} className="text-muted-foreground">Recommendation - read as you go through past papers</p>
                             </div>
+
+
+                            {showViewer &&
+                                <XlsxViewer fileUrl="/revision-notes.xlsx" setShowViewer={setShowViewer} />
+                            }
                         </div>
                     </div>
                 </div>
