@@ -92,7 +92,8 @@ const RevisionSummaries = () => {
 
 
                             {showViewer &&
-                                <XlsxViewer fileUrl="/revision-notes.xlsx" setShowViewer={setShowViewer} />
+                                <XlsxViewer fileUrl="https://raw.githubusercontent.com/khiba-k/Files/main/Products%20and%20Investments%20Summary.xlsx
+" setShowViewer={setShowViewer} />
                             }
                         </div>
                     </div>
