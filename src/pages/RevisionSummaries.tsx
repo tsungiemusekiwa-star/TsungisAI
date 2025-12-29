@@ -92,8 +92,7 @@ const RevisionSummaries = () => {
 
 
                             {showViewer &&
-                                <XlsxViewer fileUrl="https://raw.githubusercontent.com/khiba-k/Files/main/Products%20and%20Investments%20Summary.xlsx
-" setShowViewer={setShowViewer} />
+                                <XlsxViewer fileUrl="https://storage.googleapis.com/testtsungiai.firebasestorage.app/revision-summaries/Products%20and%20Investments%20Summary.xlsx?GoogleAccessId=firebase-adminsdk-fbsvc%40testtsungiai.iam.gserviceaccount.com&Expires=16730316000&Signature=OI8TTX2lrvEatQGPzSg1oIJoDui1dQ2MAuZN9uvwimhQGMdh91%2BEm1yh%2BZLWcmY5tj6pDJsaeNQpnx7GJj9p7avYkNbwjWoFIjyqSXKYD0%2BHAtBwfkyPUpQG5fY6Lo5AwnpOU62iBLRlJm04ikolQvPhDGN1NZVS82AarB3W5XNBMui0JJiTBb2LyaYSIqNsYpOXK4iv6lQZNHX5s%2FpjL2oPZKOL4xl2Ygc84fnsRDZeKna5OB%2FFNQiVXdCNK0u%2FugE4V%2BF1EdmnTnTcyop5RfkMUxz2B7j0iw%2BXIR9RmL4wy1kmfZoPH9ZemPmzp3PLMGTP%2B1UQasfCUkz%2B%2BW2Aow%3D%3D" setShowViewer={setShowViewer} />
                             }
                         </div>
                     </div>
