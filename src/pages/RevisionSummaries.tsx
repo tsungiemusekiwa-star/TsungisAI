@@ -1,17 +1,30 @@
-import type { ResultsStateType } from '@/types/revision-summaries.types';
+import type { ResultsStateType, RevisionSummaryType } from '@/types/revision-summaries.types';
 import { useState } from 'react';
-import PDFIcon from "@/assets/pdf-icon.png";
-import XLSXIcon from "@/assets/xlsx-icon.png";
-import { XlsxViewer } from '@/components/revision-summaries/xlsx-viewer';
+import { Timestamp } from 'firebase/firestore';
+import { FileViewer } from '@/components/revision-summaries/file-viewer';
 
 const RevisionSummaries = () => {
     const [resultsState, setResultsState] = useState<ResultsStateType>("success");
-    const [showViewer, setShowViewer] = useState<boolean>(false);
-    // Load audio files from Firebase on component mount
-    // useEffect(() => {
-    //     loadAudioFiles();
-    //     loadTrackProgress();
-    // }, []);
+    const [showFile, setShowFile] = useState<boolean>(false);
+
+    const revisionNotes: RevisionSummaryType[] = [
+        {
+            name: "Notes by Morgan Mostert",
+            fileUrl:
+                "https://storage.googleapis.com/testtsungiai.firebasestorage.app/revision-summaries/CA1%20-%20A311%20-%20Death%20V2.pdf?GoogleAccessId=firebase-adminsdk-fbsvc%40testtsungiai.iam.gserviceaccount.com&Expires=16730316000&Signature=ktoTLEPCuck1iE9dHiqFtdTO7K8DydJmPWcrJLkMycpepQq%2FQKxBVzeY4aV%2FlfXBQWczDphCS8hsL%2F%2BAEwTkHD0bSO8CVU0n3uLeWnTGL8A7TrJ%2BKejcG2E3YKCKFoggX9mkCa1bHYZDmEg2vXINhIF7jU0EEobRiLUc%2F0qGXg9dYoS3EI%2Fu%2FKDhQvjEz2j5JHkijhr9hXMRMTrMmL39FvXNn%2B4n%2FoRTi2ns2CQcXv%2BELpVYhfMNc%2FD5gItNyvz4IFFoeUU2N4k7zwnC8bbAmrs7VS8o%2Bx7%2FTjeis46dM4Yfuto3XK68b0VS6HkalX%2FUngqay%2FWCuahFGqSE6V9f0g%3D%3D",
+            fileType: "pdf",
+            description: "Recommendation - read before you go through ActEd notes",
+            dateCreated: Timestamp.fromDate(new Date("2025-12-29T17:22:11+02:00")),
+        },
+        {
+            name: "A311 Exam Handy Notes",
+            fileUrl:
+                "https://storage.googleapis.com/testtsungiai.firebasestorage.app/revision-summaries/Products%20and%20Investments%20Summary.xlsx?GoogleAccessId=firebase-adminsdk-fbsvc%40testtsungiai.iam.gserviceaccount.com&Expires=16730316000&Signature=OI8TTX2lrvEatQGPzSg1oIJoDui1dQ2MAuZN9uvwimhQGMdh91%2BEm1yh%2BZLWcmY5tj6pDJsaeNQpnx7GJj9p7avYkNbwjWoFIjyqSXKYD0%2BHAtBwfkyPUpQG5fY6Lo5AwnpOU62iBLRlJm04ikolQvPhDGN1NZVS82AarB3W5XNBMui0JJiTBb2LyaYSIqNsYpOXK4iv6lQZNHX5s%2FpjL2oPZKOL4xl2Ygc84fnsRDZeKna5OB%2FFNQiVXdCNK0u%2FugE4V%2BF1EdmnTnTcyop5RfkMUxz2B7j0iw%2BXIR9RmL4wy1kmfZoPH9ZemPmzp3PLMGTP%2B1UQasfCUkz%2B%2BW2Aow%3D%3D",
+            fileType: "xlsx",
+            description: "Recommendation - read as you go through past papers",
+            dateCreated: Timestamp.fromDate(new Date("2025-12-29T17:22:11+02:00")),
+        },
+    ]
 
     return (
         <div className="space-y-4 md:space-y-6" style={{ width: '100%', maxWidth: 'none' }}>
@@ -74,26 +87,7 @@ const RevisionSummaries = () => {
                 <div className="space-y-6">
                     <div className="card">
                         <div className="card-content p-8 min-h-[200px] grid grid-cols-2 gap-4 gap-y-8 justify-items-center text-center">
-                            <div className='flex flex-col items-center justify-center text-center space-y-2'>
-                                <img style={{ height: "62px", width: "62px" }} src={PDFIcon} alt="PDF File" />
-                                <p style={{ fontSize: "16px" }}>Notes by Morgan Mostert</p>
-                                <p style={{ fontSize: "12px" }} className="text-muted-foreground">Recommendation - read before you go through ActEd notes</p>
-                            </div>
-
-                            <div
-                                onClick={() => {
-                                    setShowViewer(true);
-                                }}
-                                className='flex flex-col items-center justify-center text-center space-y-2'>
-                                <img style={{ height: "62px", width: "62px" }} src={XLSXIcon} alt="PDF File" />
-                                <p style={{ fontSize: "16px" }}>A311 Exam Handy Notes</p>
-                                <p style={{ fontSize: "12px" }} className="text-muted-foreground">Recommendation - read as you go through past papers</p>
-                            </div>
-
-
-                            {showViewer &&
-                                <XlsxViewer fileUrl="https://storage.googleapis.com/testtsungiai.firebasestorage.app/revision-summaries/Products%20and%20Investments%20Summary.xlsx?GoogleAccessId=firebase-adminsdk-fbsvc%40testtsungiai.iam.gserviceaccount.com&Expires=16730316000&Signature=OI8TTX2lrvEatQGPzSg1oIJoDui1dQ2MAuZN9uvwimhQGMdh91%2BEm1yh%2BZLWcmY5tj6pDJsaeNQpnx7GJj9p7avYkNbwjWoFIjyqSXKYD0%2BHAtBwfkyPUpQG5fY6Lo5AwnpOU62iBLRlJm04ikolQvPhDGN1NZVS82AarB3W5XNBMui0JJiTBb2LyaYSIqNsYpOXK4iv6lQZNHX5s%2FpjL2oPZKOL4xl2Ygc84fnsRDZeKna5OB%2FFNQiVXdCNK0u%2FugE4V%2BF1EdmnTnTcyop5RfkMUxz2B7j0iw%2BXIR9RmL4wy1kmfZoPH9ZemPmzp3PLMGTP%2B1UQasfCUkz%2B%2BW2Aow%3D%3D" setShowViewer={setShowViewer} />
-                            }
+                            <FileViewer revisionNotes={revisionNotes} showFile={showFile} setShowFile={setShowFile} />
                         </div>
                     </div>
                 </div>
