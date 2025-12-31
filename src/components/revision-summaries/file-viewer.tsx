@@ -11,6 +11,7 @@ interface FileViewerProps {
 
 export function FileViewer({ revisionNotes, showFile, setShowFile }: FileViewerProps) {
     const [currentFile, setCurrentFile] = useState<RevisionSummaryType | null>(null)
+    const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
     const openFile = (file: RevisionSummaryType) => {
         setCurrentFile(file)
@@ -23,7 +24,14 @@ export function FileViewer({ revisionNotes, showFile, setShowFile }: FileViewerP
                 <div
                     key={index}
                     onClick={() => openFile(file)}
+                    onMouseEnter={() => setHoveredIndex(index)}
+                    onMouseLeave={() => setHoveredIndex(null)}
                     className="flex flex-col items-center justify-center text-center space-y-2 cursor-pointer"
+                    style={{
+                        border: hoveredIndex === index ? '2px solid hsl(285, 60%, 68%)' : 'none',
+                        borderRadius: '8px',
+                        padding: '16px'
+                    }}
                 >
                     <img
                         style={{ height: 48, width: 48 }}
@@ -31,7 +39,9 @@ export function FileViewer({ revisionNotes, showFile, setShowFile }: FileViewerP
                         alt={`${file.fileType.toUpperCase()} File`}
                     />
                     <p style={{ fontSize: 16 }}>{file.name}</p>
-                    <p style={{ fontSize: 12 }} className="text-muted-foreground">{file.description}</p>
+                    <p style={{ fontSize: 12, color: "var(--muted-foreground)" }}>
+                        {file.description}
+                    </p>
                 </div>
             ))}
 

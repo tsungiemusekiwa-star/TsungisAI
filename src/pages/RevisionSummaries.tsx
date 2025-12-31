@@ -73,7 +73,7 @@ const RevisionSummaries = () => {
             {Array.isArray(resultsState) && resultsState.length > 0 && (
                 <div className="space-y-6">
                     <div className="card">
-                        <div className="card-content p-8 min-h-[200px] grid grid-cols-2 gap-4 gap-y-8 justify-items-center text-center">
+                        <div className="card-content p-8 min-h-[200px] grid grid-cols-1 md:grid-cols-2 gap-4 gap-y-8 justify-items-center text-center">
                             <FileViewer
                                 revisionNotes={resultsState}
                                 showFile={showFile}
