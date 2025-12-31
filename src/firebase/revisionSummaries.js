@@ -30,7 +30,6 @@ export async function getRevisionSummaries(setResultsState) {
     if (summaries.length < 1) {
         setResultsState("null");
     } else {
-        console.log("Summaries: ", summaries);
         setResultsState(summaries);
     }
 }
