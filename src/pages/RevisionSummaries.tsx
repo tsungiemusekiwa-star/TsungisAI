@@ -7,9 +7,13 @@ const RevisionSummaries = () => {
     const [resultsState, setResultsState] = useState<ResultsStateType>("loading");
     const [showFile, setShowFile] = useState<boolean>(false);
 
+    const fetchRevisionSummaries = () => {
+        setResultsState("loading");
+        getRevisionSummaries(setResultsState);
+    };
 
     useEffect(() => {
-        getRevisionSummaries(setResultsState);
+        fetchRevisionSummaries();
     }, [])
 
     return (
@@ -48,6 +52,22 @@ const RevisionSummaries = () => {
                 </div>
             }
 
+            {/* No revision notes found state */}
+            {resultsState === null && (
+                <div className="space-y-6">
+                    <div className="card">
+                        <div className="card-content p-8 min-h-[200px] flex flex-col items-center justify-center text-center space-y-2">
+                            <h2 className="text-lg font-semibold">
+                                Come back soon!
+                            </h2>
+                            <p className="text-muted-foreground">
+                                No revision notes have been added yet.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Error State */}
             {resultsState === "error" &&
                 <div className="space-y-6">
@@ -59,7 +79,10 @@ const RevisionSummaries = () => {
                         </svg>
                         <span>An unexpected error occured</span>
                     </div>
-                    <button className="btn btn-primary w-full">
+                    <button
+                        className="btn btn-primary w-full"
+                        onClick={fetchRevisionSummaries}
+                    >
                         <svg className="icon-sm mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <polyline points="23,4 23,10 17,10" />
                             <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
