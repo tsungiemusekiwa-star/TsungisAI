@@ -75,7 +75,7 @@ export function FileViewer({ revisionNotes, showFile, setShowFile }: FileViewerP
                             style={{
                                 position: "absolute",
                                 top: 10,
-                                right: 10,
+                                right: 5,
                                 background: "none",
                                 border: "none",
                                 fontSize: 24,
