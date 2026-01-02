@@ -88,7 +88,7 @@ export function FileViewer({ revisionNotes, showFile, setShowFile }: FileViewerP
                         {/* File iframe */}
                         {currentFile.fileType === "pdf" ? (
                             <iframe
-                                src={currentFile.fileUrl}
+                                src={`${currentFile.fileUrl}#toolbar=0`}
                                 style={{ flex: 1, border: "1px solid #ccc", borderRadius: 4 }}
                                 width="100%"
                                 height="100%"
