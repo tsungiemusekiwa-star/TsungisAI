@@ -140,67 +140,67 @@ const App = () => {
 
               {/* Protected routes */}
               <Route path="/" element={
-                // <ProtectedRoute>
-                <AppLayout>
-                  <AudioLearning />
-                </AppLayout>
-                // </ProtectedRoute>
+                <ProtectedRoute>
+                  <AppLayout>
+                    <AudioLearning />
+                  </AppLayout>
+                </ProtectedRoute>
               } />
               <Route path="/audio" element={
-                // <ProtectedRoute>
-                <AppLayout>
-                  <AudioLearning />
-                </AppLayout>
-                // </ProtectedRoute>
+                <ProtectedRoute>
+                  <AppLayout>
+                    <AudioLearning />
+                  </AppLayout>
+                </ProtectedRoute>
               } />
               <Route path="/revision-summaries" element={
-                // <ProtectedRoute>
-                <AppLayout>
-                  <RevisionSummaries />
-                </AppLayout>
-                // </ProtectedRoute>
+                <ProtectedRoute>
+                  <AppLayout>
+                    <RevisionSummaries />
+                  </AppLayout>
+                </ProtectedRoute>
               } />
               <Route path="/acronyms" element={
-                // <ProtectedRoute>
-                <AppLayout>
-                  <AcronymGenerator />
-                </AppLayout>
-                // </ProtectedRoute>
+                <ProtectedRoute>
+                  <AppLayout>
+                    <AcronymGenerator />
+                  </AppLayout>
+                </ProtectedRoute>
               } />
               <Route path="/study-buddy" element={
-                // <ProtectedRoute>
-                <AppLayout>
-                  <StudyBuddy />
-                </AppLayout>
-                // </ProtectedRoute>
+                <ProtectedRoute>
+                  <AppLayout>
+                    <StudyBuddy />
+                  </AppLayout>
+                </ProtectedRoute>
               } />
               <Route path="/chat" element={
-                // <ProtectedRoute>
-                <AppLayout>
-                  <Chat />
-                </AppLayout>
-                // </ProtectedRoute>
+                <ProtectedRoute>
+                  <AppLayout>
+                    <Chat />
+                  </AppLayout>
+                </ProtectedRoute>
               } />
               <Route path="/upload" element={
-                // <ProtectedRoute>
-                <AppLayout>
-                  <AudioUpload />
-                </AppLayout>
-                // </ProtectedRoute>
+                <ProtectedRoute>
+                  <AppLayout>
+                    <AudioUpload />
+                  </AppLayout>
+                </ProtectedRoute>
               } />
               <Route path="/practice" element={
-                // <ProtectedRoute>
-                <AppLayout>
-                  <Practice />
-                </AppLayout>
-                // </ProtectedRoute>
+                <ProtectedRoute>
+                  <AppLayout>
+                    <Practice />
+                  </AppLayout>
+                </ProtectedRoute>
               } />
               <Route path="/typing-game" element={
-                // <ProtectedRoute>
-                <AppLayout>
-                  <TypingGame />
-                </AppLayout>
-                // </ProtectedRoute>
+                <ProtectedRoute>
+                  <AppLayout>
+                    <TypingGame />
+                  </AppLayout>
+                </ProtectedRoute>
               } />
 
               {/* Catch-all route */}

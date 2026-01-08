@@ -5,7 +5,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const serviceAccount = JSON.parse(
-    fs.readFileSync("./scripts/testtsungiai-firebase-adminsdk-fbsvc-c2df18bb1a.json", "utf8")
+    fs.readFileSync("./scripts/tsungi-ai-firebase-adminsdk-fbsvc-e87a4937eb.json", "utf8")
 );
 
 if (!admin.apps.length) {

@@ -48,6 +48,7 @@ To add or update summaries, use the scripts located in the `/scripts/` directory
 * **Purpose:** Uploads local files to the Firebase Storage folder `revision-summaries`.
 * **What to Edit:** * `LOCAL_PATH`: Update this to the file or folder you want to upload.
     * `ALLOWED_EXTENSIONS`: Ensure the file type you are uploading is listed.
+* **How to run?:** * Run "node scripts/uploadFilesToStorage.js " from root folder.
 
 ### 2. Database Linker
 * **File Path:** `/scripts/uploadRevisionSummaries.js`
