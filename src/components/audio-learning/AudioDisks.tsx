@@ -52,7 +52,7 @@ const AudioDisks = ({ disks, toggleDiskExpansion, expandedDisks, playerState, se
               <div className="card-content space-y-2 md:space-y-3 pt-0">
                 {files.map((file) => {
                   const isCurrentTrack = playerState.currentTrackPath === file.path;
-                  const fileProgress = playerState.trackProgress[file.path] || 0;
+                  const fileProgress = playerState.trackProgress[file.path] || file.progress;
 
                   return (
                     <div
@@ -63,8 +63,13 @@ const AudioDisks = ({ disks, toggleDiskExpansion, expandedDisks, playerState, se
                         const allFiles = disks.flatMap(d => d.files);
                         const trackIndex = allFiles.findIndex(f => f.path === file.path);
 
+                        // Calculate start time based on progress
+                        const startTime = (!file.progress || file.progress === 0)
+                          ? 0 : (file.duration || 0) * (file.progress / 100);
+
                         setPlayerState(prev => ({
                           ...prev,
+                          currentTime: startTime,
                           currentTrackPath: file.path,
                           currentFileUrl: file.url,
                           currentTrack: trackIndex,

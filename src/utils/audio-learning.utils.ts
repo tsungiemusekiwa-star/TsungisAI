@@ -1,16 +1,8 @@
 import type { AudioControlsType, AudioDiskType, AudioFileType, PlayerStateType } from "@/types/audio-learning.types";
 import type { ResultsStateType } from "@/types/shared.types";
 import { fetchAllAudioFiles } from '@/firebase/audioService.js';
+import type { Dispatch, SetStateAction } from "react";
 
-// declare global {
-//   interface Window {
-//     fs: {
-//       readFile(filepath: string, options?: { encoding?: string }): Promise<Uint8Array | string>;
-//     };
-//   }
-// }
-
-// export { };
 
 // Default values for the player state
 export const DefaultPlayerStateValues: PlayerStateType = {
@@ -32,13 +24,36 @@ export const loadAudioFiles = async (
   setResultsState: (value: ResultsStateType<AudioDiskType[]>) => void
 ) => {
   try {
-    const audioFiles = await fetchAllAudioFiles();
-    if (audioFiles.length < 1) {
+    const audioDisks: AudioDiskType[] = await fetchAllAudioFiles();
+
+    if (audioDisks.length < 1) {
       setResultsState(null);
+      return;
     }
-    setResultsState(audioFiles);
+
+    // Load all saved progress from localStorage (as a single JSON object)
+    const savedProgressString = localStorage.getItem("tsungi-ai-track-progress");
+    const savedProgress: { [trackPath: string]: number } = savedProgressString
+      ? JSON.parse(savedProgressString)
+      : {};
+
+    const hydratedDisks: AudioDiskType[] = audioDisks.map(disk => ({
+      ...disk,
+      files: disk.files.map(file => {
+
+        // Get progress from the parsed object using the file path as key
+        const fileProgress = savedProgress[file.path] || 0;
+
+        return {
+          ...file,
+          progress: fileProgress,
+        };
+      }),
+    }));
+
+    setResultsState(hydratedDisks);
   } catch (err) {
-    console.error("Error fetching audio files");
+    console.error("Error fetching audio files", err);
     setResultsState("error");
   }
 };
@@ -97,19 +112,6 @@ export const audioControls: AudioControlsType = {
   }
 };
 
-// Update player state with current playback time
-export const handleTimeUpdate = (
-  audioElement: HTMLAudioElement | null,
-  setPlayerState: React.Dispatch<React.SetStateAction<PlayerStateType>>
-): void => {
-  if (audioElement) {
-    setPlayerState(prev => ({
-      ...prev,
-      currentTime: audioElement.currentTime
-    }));
-  }
-};
-
 // Update player state with audio duration once metadata is loaded
 export const handleLoadedMetadata = (
   audioElement: HTMLAudioElement | null,
@@ -130,10 +132,10 @@ export const handleEnded = (
   setPlayerState: React.Dispatch<React.SetStateAction<PlayerStateType>>
 ): void => {
   if (!Array.isArray(resultsState)) return;
-  
+
   const allFiles = resultsState.flatMap(disk => disk.files);
   const currentIndex = allFiles.findIndex(f => f.path === playerState.currentTrackPath);
-  
+
   if (currentIndex < allFiles.length - 1) {
     const nextFile = allFiles[currentIndex + 1];
     setPlayerState(prev => ({
@@ -164,7 +166,7 @@ export const getCurrentAudioFile = (
   currentTrackPath: string | null
 ): AudioFileType | null => {
   if (!Array.isArray(resultsState) || !currentTrackPath) return null;
-  
+
   const allFiles = resultsState.flatMap(disk => disk.files);
   return allFiles.find(f => f.path === currentTrackPath) || null;
 };
@@ -176,12 +178,12 @@ export const handleAudioPlayback = (
   currentTrackPath: string | null
 ): void => {
   if (!audioElement) return;
-  
+
   if (!currentTrackPath) {
     console.log("No track path set");
     return;
   }
-  
+
   if (isPlaying) {
     audioElement.play().catch(err => {
       console.error("Error Playing Audio Note");
@@ -190,3 +192,52 @@ export const handleAudioPlayback = (
     audioElement.pause();
   }
 };
+
+// Update Time Displayed & Handle Progress Tracking in LocalStorage
+export function handleTimeUpdate(
+  audioEl: HTMLAudioElement | null,
+  setPlayerState: Dispatch<SetStateAction<PlayerStateType>>
+) {
+  if (!audioEl) return;
+
+  const { currentTime, duration } = audioEl;
+
+  if (!duration || isNaN(duration)) return;
+
+  const progressPercent = Math.min(
+    100,
+    Math.round((currentTime / duration) * 100)
+  );
+
+  setPlayerState(prev => {
+    if (!prev.currentTrackPath) return prev;
+
+    const trackPath = prev.currentTrackPath;
+    const lastSaved = prev.trackProgress[trackPath] ?? 0;
+
+    // Only save if progress advanced by >= 2% or finished
+    if (progressPercent < lastSaved + 2 && progressPercent !== 100) {
+      return {
+        ...prev,
+        currentTime
+      };
+    }
+
+    const updatedProgress = {
+      ...prev.trackProgress,
+      [trackPath]: progressPercent
+    };
+
+    // Persist to localStorage
+    localStorage.setItem(
+      "tsungi-ai-track-progress",
+      JSON.stringify(updatedProgress)
+    );
+
+    return {
+      ...prev,
+      currentTime,
+      trackProgress: updatedProgress
+    };
+  });
+}

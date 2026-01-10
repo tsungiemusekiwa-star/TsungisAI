@@ -9,7 +9,7 @@ export interface AudioFileType {
   disk: string;
   title: string;
   trackNumber: string;
-  duration?: string;
+  duration?: number;
   progress: number;
   category: 'CA1';
 }
