@@ -1,9 +1,11 @@
-import { useState, useEffect, useRef } from 'react';
-import { type PlayerStateType, type AudioDiskType, type AudioFileType } from '@/types/audio-learning.types.js';
+import { useState, useEffect, useRef, useMemo } from 'react';
+import { type PlayerStateType, type AudioDiskType } from '@/types/audio-learning.types.js';
 import type { ResultsStateType } from '@/types/shared.types.js';
-import { DefaultPlayerStateValues, loadAudioFiles } from '@/utils/audio-learning.utils.js';
+import { audioControls, DefaultPlayerStateValues, getCurrentAudioFile, handleAudioPlayback, handleEnded, handleLoadedMetadata, handleTimeUpdate, loadAudioFiles, toggleDiskExpansion } from '@/utils/audio-learning.utils.js';
 import AudioDisks from '@/components/audio-learning/AudioDisks';
 import AudioPlayer from '@/components/audio-learning/AudioPlayer';
+import ErrorUI from '@/components/audio-learning/ErrorUI';
+import LoadingUI from '@/components/audio-learning/LoadingUI';
 
 const AudioLearning = () => {
   const [resultsState, setResultsState] = useState<ResultsStateType<AudioDiskType[]>>("loading");
@@ -16,148 +18,57 @@ const AudioLearning = () => {
     loadAudioFiles(setResultsState);
   }, []);
 
-  // Update audio element when current track changes
-  useEffect(() => {
-    if (!audioRef.current || !playerState.currentTrackPath) return;
-
-    audioRef.current.src = playerState.currentTrackPath;
-    audioRef.current.volume = playerState.volume;
-    audioRef.current.load();
-    
-    if (playerState.isPlaying) {
-      audioRef.current.play();
-    }
-  }, [playerState.currentTrackPath]);
-
   // Handle play/pause state changes
   useEffect(() => {
-    if (!audioRef.current) return;
+    handleAudioPlayback(audioRef.current, playerState.isPlaying, playerState.currentTrackPath);
+  }, [playerState.isPlaying, playerState.currentTrackPath]);
 
-    if (playerState.isPlaying) {
-      audioRef.current.play();
-    } else {
-      audioRef.current.pause();
-    }
-  }, [playerState.isPlaying]);
-
-  // Audio event handlers
-  const handleTimeUpdate = () => {
-    if (audioRef.current) {
-      setPlayerState(prev => ({
-        ...prev,
-        currentTime: audioRef.current!.currentTime
-      }));
-    }
-  };
-
-  const handleLoadedMetadata = () => {
-    if (audioRef.current) {
-      setPlayerState(prev => ({
-        ...prev,
-        duration: audioRef.current!.duration
-      }));
-    }
-  };
-
-  const handleEnded = () => {
-    if (!Array.isArray(resultsState)) return;
-    
-    // Find next track
-    const allFiles = resultsState.flatMap(disk => disk.files);
-    const currentIndex = allFiles.findIndex(f => f.path === playerState.currentTrackPath);
-    
-    if (currentIndex < allFiles.length - 1) {
-      const nextFile = allFiles[currentIndex + 1];
-      setPlayerState(prev => ({
-        ...prev,
-        currentTrackPath: nextFile.path,
-        currentTrack: currentIndex + 1,
-        isPlaying: true
-      }));
-    } else {
-      setPlayerState(prev => ({ ...prev, isPlaying: false }));
-    }
-  };
-
-  // Audio controls
-  const audioControls = {
-    playPause: () => {
-      setPlayerState(prev => ({ ...prev, isPlaying: !prev.isPlaying }));
-    },
-    
-    next: () => {
-      if (!Array.isArray(resultsState)) return;
-      const allFiles = resultsState.flatMap(disk => disk.files);
-      const currentIndex = allFiles.findIndex(f => f.path === playerState.currentTrackPath);
-      
-      if (currentIndex < allFiles.length - 1) {
-        const nextFile = allFiles[currentIndex + 1];
-        setPlayerState(prev => ({
-          ...prev,
-          currentTrackPath: nextFile.path,
-          currentTrack: currentIndex + 1,
-          isPlaying: true
-        }));
-      }
-    },
-    
-    previous: () => {
-      if (!Array.isArray(resultsState)) return;
-      const allFiles = resultsState.flatMap(disk => disk.files);
-      const currentIndex = allFiles.findIndex(f => f.path === playerState.currentTrackPath);
-      
-      if (currentIndex > 0) {
-        const prevFile = allFiles[currentIndex - 1];
-        setPlayerState(prev => ({
-          ...prev,
-          currentTrackPath: prevFile.path,
-          currentTrack: currentIndex - 1,
-          isPlaying: true
-        }));
-      }
-    },
-    
-    seek: (percentage: number) => {
-      if (audioRef.current) {
-        const newTime = (percentage / 100) * playerState.duration;
-        audioRef.current.currentTime = newTime;
-        setPlayerState(prev => ({ ...prev, currentTime: newTime }));
-      }
-    },
-    
-    setVolume: (volume: number) => {
-      if (audioRef.current) {
-        audioRef.current.volume = volume;
-        setPlayerState(prev => ({ ...prev, volume }));
-      }
-    }
-  };
 
   // Expand Disk to see mp3 files
-  const toggleDiskExpansion = (diskName: string) => {
-    setExpandedDisks(prev => ({
-      ...prev,
-      [diskName]: !prev[diskName]
-    }));
-  };
+  const handleToggleDiskExpansion = (diskName: string) => {
+    toggleDiskExpansion(diskName, setExpandedDisks);
+  }
 
   // Get current audio file
-  const getCurrentAudioFile = (): AudioFileType | null => {
-    if (!Array.isArray(resultsState) || !playerState.currentTrackPath) return null;
-    const allFiles = resultsState.flatMap(disk => disk.files);
-    return allFiles.find(f => f.path === playerState.currentTrackPath) || null;
+  const currentAudioFile = getCurrentAudioFile(resultsState, playerState.currentTrackPath);
+
+  // Calculate all files once and memoize
+  const allFiles = useMemo(() => {
+    if (!Array.isArray(resultsState)) return [];
+    return resultsState.flatMap(disk => disk.files);
+  }, [resultsState]);
+
+  // Handle Audio Controls
+  const handleAudioControls = {
+
+    playPause: () => {
+      // Don't play if no track is selected
+      if (!playerState.currentTrackPath) {
+        console.warn("No track selected");
+        return;
+      }
+      audioControls.playPause({ setPlayerState });
+    },
+
+    next: () => {
+      audioControls.next({ setPlayerState, resultsState, playerState });
+    },
+
+    previous: () => {
+      audioControls.previous({ setPlayerState, resultsState, playerState });
+    },
+
+    seek: (percentage: number) => {
+      audioControls.seek({ percentage, setPlayerState, playerState, audioRef });
+    },
+
+    setVolume: (volume: number) => {
+      audioControls.setVolume({ volume, setPlayerState, audioRef });
+    }
   };
 
   return (
     <div className="space-y-4 md:space-y-6" style={{ width: '100%', maxWidth: 'none' }}>
-      {/* Hidden audio element */}
-      <audio
-        ref={audioRef}
-        onTimeUpdate={handleTimeUpdate}
-        onLoadedMetadata={handleLoadedMetadata}
-        onEnded={handleEnded}
-        preload="metadata"
-      />
 
       {/* Header */}
       <div className="text-center space-y-2">
@@ -170,62 +81,45 @@ const AudioLearning = () => {
       </div>
 
       {/* Loading state */}
-      {resultsState === "loading" && (
-        <div className="space-y-6">
-          <div className="card">
-            <div className="card-content p-8 text-center">
-              <div className="animate-spin icon-lg mx-auto mb-4 text-primary">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M21 12a9 9 0 11-6.219-8.56" />
-                </svg>
-              </div>
-              <p className="text-muted-foreground">Loading audio files...</p>
-            </div>
-          </div>
-        </div>
-      )}
+      <LoadingUI resultsState={resultsState} />
 
       {/* Error state */}
-      {resultsState === "error" && (
-        <div className="space-y-6">
-          <div className="alert alert-destructive">
-            <svg className="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="12" cy="12" r="10" />
-              <line x1="15" y1="9" x2="9" y2="15" />
-              <line x1="9" y1="9" x2="15" y2="15" />
-            </svg>
-            <span>An unexpected error occurred</span>
-          </div>
-          <button onClick={() => loadAudioFiles(setResultsState)} className="btn btn-primary w-full">
-            <svg className="icon-sm mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <polyline points="23,4 23,10 17,10" />
-              <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
-            </svg>
-            Retry Loading
-          </button>
-        </div>
-      )}
+      <ErrorUI resultsState={resultsState} setResultsState={setResultsState} loadAudioFiles={loadAudioFiles} />
 
       {/* Audio Files Successfully Returned */}
       {Array.isArray(resultsState) && resultsState.length > 0 && (
         <>
           {/* Audio Player - only show if a track is selected */}
           {playerState.currentTrackPath && (
-            <AudioPlayer 
-              playerState={playerState}
-              currentAudioFile={getCurrentAudioFile()}
-              audioControls={audioControls}
-              allFiles={resultsState.flatMap(disk => disk.files)}
-            />
+            <>
+              {/* Hidden audio element */}
+              <audio
+                ref={audioRef}
+                src={playerState.currentFileUrl || undefined}
+                onTimeUpdate={() => handleTimeUpdate(audioRef.current, setPlayerState)}
+                onLoadedMetadata={() => handleLoadedMetadata(audioRef.current, setPlayerState)}
+                onEnded={() => handleEnded(resultsState, playerState, setPlayerState)}
+                onError={(e) => {
+                  console.error("Audio error:", e);
+                  console.error("Failed src:", playerState.currentFileUrl);
+                }}
+              />
+              <AudioPlayer
+                playerState={playerState}
+                currentAudioFile={currentAudioFile}
+                audioControls={handleAudioControls}
+                allFiles={allFiles}
+              />
+            </>
           )}
 
           {/* Track List by Disk */}
-          <AudioDisks 
-            disks={resultsState} 
-            toggleDiskExpansion={toggleDiskExpansion} 
-            expandedDisks={expandedDisks} 
-            playerState={playerState} 
-            setPlayerState={setPlayerState} 
+          <AudioDisks
+            disks={resultsState}
+            toggleDiskExpansion={handleToggleDiskExpansion}
+            expandedDisks={expandedDisks}
+            playerState={playerState}
+            setPlayerState={setPlayerState}
           />
         </>
       )}

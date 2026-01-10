@@ -1,25 +1,22 @@
-import type { PlayerStateType, AudioFileType } from "@/types/audio-learning.types";
+import type { PlayerStateType, AudioFileType, AudioPlayerControlsType } from "@/types/audio-learning.types";
 
 interface AudioPlayerProps {
     playerState: PlayerStateType;
     currentAudioFile: AudioFileType | null;
-    audioControls: {
-        playPause: () => void;
-        next: () => void;
-        previous: () => void;
-        seek: (percentage: number) => void;
-        setVolume: (volume: number) => void;
-    };
+    audioControls: AudioPlayerControlsType;
     allFiles: AudioFileType[];
 }
 
 const AudioPlayer = ({ playerState, currentAudioFile, audioControls, allFiles }: AudioPlayerProps) => {
+    // Don't render anything if no audio file is selected
     if (!currentAudioFile) return null;
 
+    // Calculate progress bar fill percentage based on current time and total duration
     const progressPercentage = playerState.duration > 0
         ? (playerState.currentTime / playerState.duration) * 100
         : 0;
 
+    // Convert seconds to MM:SS format for display
     const formatTime = (seconds: number) => {
         if (isNaN(seconds)) return '0:00';
         const mins = Math.floor(seconds / 60);
@@ -27,12 +24,14 @@ const AudioPlayer = ({ playerState, currentAudioFile, audioControls, allFiles }:
         return `${mins}:${secs.toString().padStart(2, '0')}`;
     };
 
+    // Handle clicks on progress bar to seek to a specific position
     const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
         const rect = e.currentTarget.getBoundingClientRect();
         const percentage = ((e.clientX - rect.left) / rect.width) * 100;
         audioControls.seek(percentage);
     };
 
+    // Determine current track position in playlist to enable/disable prev/next buttons
     const currentIndex = allFiles.findIndex(f => f.path === playerState.currentTrackPath);
     const isFirstTrack = currentIndex === 0;
     const isLastTrack = currentIndex === allFiles.length - 1;

@@ -60,18 +60,16 @@ const AudioDisks = ({ disks, toggleDiskExpansion, expandedDisks, playerState, se
                       className={`flex items-center gap-2 md:gap-4 p-2 md:p-3 rounded-lg md:rounded-xl border transition-all cursor-pointer hover:bg-card ${isCurrentTrack ? "bg-primary/10 border-primary" : ""
                         }`}
                       onClick={() => {
-                        // Get index of clicked file in all files
                         const allFiles = disks.flatMap(d => d.files);
                         const trackIndex = allFiles.findIndex(f => f.path === file.path);
 
                         setPlayerState(prev => ({
                           ...prev,
                           currentTrackPath: file.path,
+                          currentFileUrl: file.url,
                           currentTrack: trackIndex,
                           isPlaying: true,
                         }));
-
-                        console.log("Clicked");
                       }}
                     >
                       <div

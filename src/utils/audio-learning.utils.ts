@@ -1,7 +1,16 @@
-import type { AudioDiskType, PlayerStateType } from "@/types/audio-learning.types";
+import type { AudioControlsType, AudioDiskType, AudioFileType, PlayerStateType } from "@/types/audio-learning.types";
 import type { ResultsStateType } from "@/types/shared.types";
 import { fetchAllAudioFiles } from '@/firebase/audioService.js';
-import type { Dispatch, RefObject, SetStateAction } from "react";
+
+// declare global {
+//   interface Window {
+//     fs: {
+//       readFile(filepath: string, options?: { encoding?: string }): Promise<Uint8Array | string>;
+//     };
+//   }
+// }
+
+// export { };
 
 // Default values for the player state
 export const DefaultPlayerStateValues: PlayerStateType = {
@@ -14,6 +23,8 @@ export const DefaultPlayerStateValues: PlayerStateType = {
     return savedVolume ? parseFloat(savedVolume) : 1;
   })(),
   trackProgress: {},
+  currentTrackPath: null,
+  currentFileUrl: null
 };
 
 // Load and organize audio files from Firebase
@@ -26,82 +37,6 @@ export const loadAudioFiles = async (
       setResultsState(null);
     }
     setResultsState(audioFiles);
-    //   const allFiles: AudioFileType[] = [];
-
-    //   // Define the disk directories based on Firebase upload structure
-    //   const diskDirectories = [
-    //     'CA1-Sound-Revision/Disk 1 (Part 1- Part 2)',
-    //     'CA1-Sound-Revision/Disk 2',
-    //     'CA1-Sound-Revision/Disk 3',
-    //     'CA1-Sound-Revision/Disk 4',
-    //     'CA1-Sound-Revision/Disk 5'
-    //   ];
-
-    //   // Load files from each disk directory
-    //   for (const diskDir of diskDirectories) {
-    //     try {
-    //       const { data: files, error: listError } = await listAudioFiles(diskDir);
-
-    //       if (listError) {
-    //         console.error(`Error loading files from ${diskDir}:`, listError);
-    //         continue;
-    //       }
-
-    //       if (files) {
-    //         const audioFilePromises = files
-    //           .filter((file: any) => file.name.endsWith('.mp3'))
-    //           .map(async (file: any) => {
-    //             try {
-    //               const url = await getAudioUrl(file.path);
-
-    //               // Parse track info from filename
-    //               const trackMatch = file.name.match(/^(\d+)\s+(.+)\.mp3$/);
-    //               const trackNumber = trackMatch ? trackMatch[1] : '';
-    //               const title = trackMatch ? trackMatch[2] : file.name.replace('.mp3', '');
-
-    //               // Get just the disk name for display
-    //               const displayDisk = diskDir.replace('CA1-Sound-Revision/', '');
-
-    //               return {
-    //                 name: file.name,
-    //                 path: file.path,
-    //                 url: url,
-    //                 disk: displayDisk,
-    //                 title: title,
-    //                 trackNumber: trackNumber,
-    //                 category: 'CA1' as const,
-    //                 progress: 0
-    //               };
-    //             } catch (error) {
-    //               console.error(`Error getting URL for ${file.name}:`, error);
-    //               return null;
-    //             }
-    //           });
-
-    //         const resolvedFiles = await Promise.all(audioFilePromises);
-    //         const validFiles = resolvedFiles.filter(Boolean) as AudioFile[];
-    //         allFiles.push(...validFiles);
-    //       }
-    //     } catch (error) {
-    //       console.error(`Error loading ${diskDir}:`, error);
-    //     }
-    //   }
-
-    //   // Sort files by disk and track number
-    //   allFiles.sort((a, b) => {
-    //     const diskOrder = ['Disk 1 (Part 1- Part 2)', 'Disk 2', 'Disk 3', 'Disk 4', 'Disk 5'];
-    //     const diskA = diskOrder.indexOf(a.disk);
-    //     const diskB = diskOrder.indexOf(b.disk);
-
-    //     if (diskA !== diskB) {
-    //       return diskA - diskB;
-    //     }
-
-    //     return parseInt(a.trackNumber) - parseInt(b.trackNumber);
-    //   });
-
-    //   setAudioFiles(allFiles);
-    //   setError(null);
   } catch (err) {
     console.error("Error fetching audio files");
     setResultsState("error");
@@ -109,90 +44,149 @@ export const loadAudioFiles = async (
 };
 
 // Object with properties that control the 'current' playing audio
-export const audioControls = {
-  playPause(
-    audioRef: RefObject<HTMLAudioElement>,
-    playerState: PlayerStateType,
-    setPlayerState: Dispatch<SetStateAction<PlayerStateType>>
-  ) {
-    if (!audioRef.current) return;
-
-    if (playerState.isPlaying) {
-      audioRef.current.pause();
-    } else {
-      audioRef.current.play();
-    }
-
-    setPlayerState(prev => ({
-      ...prev,
-      isPlaying: !prev.isPlaying,
-    }));
+export const audioControls: AudioControlsType = {
+  playPause: ({ setPlayerState }) => {
+    setPlayerState(prev => ({ ...prev, isPlaying: !prev.isPlaying }));
   },
 
-  setVolume(
-    audioRef: RefObject<HTMLAudioElement>,
-    volume: number,
-    setPlayerState: Dispatch<SetStateAction<PlayerStateType>>
-  ) {
+  next: ({ setPlayerState, resultsState, playerState }) => {
+    if (!Array.isArray(resultsState)) return;
+    const allFiles = resultsState.flatMap(disk => disk.files);
+    const currentIndex = allFiles.findIndex(f => f.path === playerState.currentTrackPath);
+    if (currentIndex < allFiles.length - 1) {
+      const nextFile = allFiles[currentIndex + 1];
+      setPlayerState(prev => ({
+        ...prev,
+        currentTrackPath: nextFile.path,
+        currentFileUrl: nextFile.url,  // Add this
+        currentTrack: currentIndex + 1,
+        isPlaying: true
+      }));
+    }
+  },
+
+  previous: ({ setPlayerState, resultsState, playerState }) => {
+    if (!Array.isArray(resultsState)) return;
+    const allFiles = resultsState.flatMap(disk => disk.files);
+    const currentIndex = allFiles.findIndex(f => f.path === playerState.currentTrackPath);
+    if (currentIndex > 0) {
+      const prevFile = allFiles[currentIndex - 1];
+      setPlayerState(prev => ({
+        ...prev,
+        currentTrackPath: prevFile.path,
+        currentFileUrl: prevFile.url,  // Add this
+        currentTrack: currentIndex - 1,
+        isPlaying: true
+      }));
+    }
+  },
+
+  seek: ({ percentage, setPlayerState, playerState, audioRef }) => {
+    if (audioRef.current) {
+      const newTime = (percentage / 100) * playerState.duration;
+      audioRef.current.currentTime = newTime;
+      setPlayerState(prev => ({ ...prev, currentTime: newTime }));
+    }
+  },
+
+  setVolume: ({ volume, setPlayerState, audioRef }) => {
     if (audioRef.current) {
       audioRef.current.volume = volume;
+      setPlayerState(prev => ({ ...prev, volume }));
     }
+  }
+};
 
-    localStorage.setItem("tsungi-ai-volume", volume.toString());
-
+// Update player state with current playback time
+export const handleTimeUpdate = (
+  audioElement: HTMLAudioElement | null,
+  setPlayerState: React.Dispatch<React.SetStateAction<PlayerStateType>>
+): void => {
+  if (audioElement) {
     setPlayerState(prev => ({
       ...prev,
-      volume,
+      currentTime: audioElement.currentTime
     }));
-  },
+  }
+};
 
-  timeUpdate(
-    audioRef: RefObject<HTMLAudioElement>,
-    currentTrackPath: string | null,
-    setPlayerState: Dispatch<SetStateAction<PlayerStateType>>
-  ) {
-    if (!audioRef.current || !currentTrackPath) return;
-
-    const currentTime = audioRef.current.currentTime;
-    const duration = audioRef.current.duration || 0;
-
-    const progress =
-      duration > 0 ? Math.round((currentTime / duration) * 100) : 0;
-
+// Update player state with audio duration once metadata is loaded
+export const handleLoadedMetadata = (
+  audioElement: HTMLAudioElement | null,
+  setPlayerState: React.Dispatch<React.SetStateAction<PlayerStateType>>
+): void => {
+  if (audioElement) {
     setPlayerState(prev => ({
       ...prev,
-      currentTime,
-      duration,
-      trackProgress: {
-        ...prev.trackProgress,
-        [currentTrackPath]: progress,
-      },
+      duration: audioElement.duration
     }));
-  },
+  }
+};
 
-  loadedMetadata(
-    audioRef: RefObject<HTMLAudioElement>,
-    setPlayerState: Dispatch<SetStateAction<PlayerStateType>>
-  ) {
-    if (!audioRef.current) return;
-
+// Handle track completion and auto-play next track if available
+export const handleEnded = (
+  resultsState: ResultsStateType<AudioDiskType[]>,
+  playerState: PlayerStateType,
+  setPlayerState: React.Dispatch<React.SetStateAction<PlayerStateType>>
+): void => {
+  if (!Array.isArray(resultsState)) return;
+  
+  const allFiles = resultsState.flatMap(disk => disk.files);
+  const currentIndex = allFiles.findIndex(f => f.path === playerState.currentTrackPath);
+  
+  if (currentIndex < allFiles.length - 1) {
+    const nextFile = allFiles[currentIndex + 1];
     setPlayerState(prev => ({
       ...prev,
-      duration: audioRef.current!.duration,
+      currentTrackPath: nextFile.path,
+      currentTrack: currentIndex + 1,
+      isPlaying: true
     }));
-  },
+  } else {
+    setPlayerState(prev => ({ ...prev, isPlaying: false }));
+  }
+};
 
-  seek(
-    audioRef: RefObject<HTMLAudioElement>,
-    duration: number,
-    e: React.MouseEvent<HTMLDivElement>
-  ) {
-    if (!audioRef.current || !duration) return;
+// Toggle visibility of files within a disk category
+export const toggleDiskExpansion = (
+  diskName: string,
+  setExpandedDisks: React.Dispatch<React.SetStateAction<Record<string, boolean>>>
+): void => {
+  setExpandedDisks(prev => ({
+    ...prev,
+    [diskName]: !prev[diskName]
+  }));
+};
 
-    const rect = e.currentTarget.getBoundingClientRect();
-    const clickX = e.clientX - rect.left;
-    const percentage = clickX / rect.width;
+// Retrieve the currently playing audio file object
+export const getCurrentAudioFile = (
+  resultsState: ResultsStateType<AudioDiskType[]>,
+  currentTrackPath: string | null
+): AudioFileType | null => {
+  if (!Array.isArray(resultsState) || !currentTrackPath) return null;
+  
+  const allFiles = resultsState.flatMap(disk => disk.files);
+  return allFiles.find(f => f.path === currentTrackPath) || null;
+};
 
-    audioRef.current.currentTime = percentage * duration;
-  },
+// Handle audio playback based on current state
+export const handleAudioPlayback = (
+  audioElement: HTMLAudioElement | null,
+  isPlaying: boolean,
+  currentTrackPath: string | null
+): void => {
+  if (!audioElement) return;
+  
+  if (!currentTrackPath) {
+    console.log("No track path set");
+    return;
+  }
+  
+  if (isPlaying) {
+    audioElement.play().catch(err => {
+      console.error("Error Playing Audio Note");
+    });
+  } else {
+    audioElement.pause();
+  }
 };
