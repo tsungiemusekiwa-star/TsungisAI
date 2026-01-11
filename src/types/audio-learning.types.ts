@@ -72,3 +72,10 @@ export interface AudioPlayerControlsType {
   seek: (percentage: number) => void;
   setVolume: (volume: number) => void;
 }
+
+// Stats Object Type
+export interface StatsObjectType {
+  totalFiles: number;
+  completedTracks: number;
+  overallProgress: number;
+}

@@ -1,4 +1,4 @@
-import type { AudioControlsType, AudioDiskType, AudioFileType, PlayerStateType } from "@/types/audio-learning.types";
+import type { AudioControlsType, AudioDiskType, AudioFileType, PlayerStateType, StatsObjectType } from "@/types/audio-learning.types";
 import type { ResultsStateType } from "@/types/shared.types";
 import { fetchAllAudioFiles } from '@/firebase/audioService.js';
 import type { Dispatch, SetStateAction } from "react";
@@ -19,9 +19,17 @@ export const DefaultPlayerStateValues: PlayerStateType = {
   currentFileUrl: null
 };
 
+// Default Stats Values(Stats Cards)
+export const DefaulStatsObject: StatsObjectType = {
+  totalFiles: 0,
+  completedTracks: 0,
+  overallProgress: 0
+}
+
 // Load and organize audio files from Firebase
 export const loadAudioFiles = async (
-  setResultsState: (value: ResultsStateType<AudioDiskType[]>) => void
+  setResultsState: (value: ResultsStateType<AudioDiskType[]>) => void,
+  setStatsObject: (value: StatsObjectType) => void
 ) => {
   try {
     const audioDisks: AudioDiskType[] = await fetchAllAudioFiles();
@@ -50,6 +58,10 @@ export const loadAudioFiles = async (
         };
       }),
     }));
+
+    // Calculate and set stats
+    const stats = calculateAudioStats(hydratedDisks);
+    setStatsObject(stats);
 
     setResultsState(hydratedDisks);
   } catch (err) {
@@ -108,6 +120,9 @@ export const audioControls: AudioControlsType = {
     if (audioRef.current) {
       audioRef.current.volume = volume;
       setPlayerState(prev => ({ ...prev, volume }));
+
+      // Persist to localStorage
+      localStorage.setItem('tsungi-ai-volume', volume.toString());
     }
   }
 };
@@ -117,12 +132,27 @@ export const handleLoadedMetadata = (
   audioElement: HTMLAudioElement | null,
   setPlayerState: React.Dispatch<React.SetStateAction<PlayerStateType>>
 ): void => {
-  if (audioElement) {
-    setPlayerState(prev => ({
+  if (!audioElement) return;
+
+  setPlayerState(prev => {
+    const duration = audioElement.duration;
+
+    // Get saved progress for current track
+    if (prev.currentTrackPath) {
+      const savedProgress = prev.trackProgress[prev.currentTrackPath] || 0;
+
+      // If there's saved progress and it's not complete, seek to that position
+      if (duration && savedProgress > 0 && savedProgress < 100) {
+        const startTime = (savedProgress / 100) * duration;
+        audioElement.currentTime = startTime;
+      }
+    }
+
+    return {
       ...prev,
-      duration: audioElement.duration
-    }));
-  }
+      duration
+    };
+  });
 };
 
 // Handle track completion and auto-play next track if available
@@ -194,9 +224,12 @@ export const handleAudioPlayback = (
 };
 
 // Update Time Displayed & Handle Progress Tracking in LocalStorage
+// Update Time Displayed & Handle Progress Tracking in LocalStorage
 export function handleTimeUpdate(
   audioEl: HTMLAudioElement | null,
-  setPlayerState: Dispatch<SetStateAction<PlayerStateType>>
+  setPlayerState: Dispatch<SetStateAction<PlayerStateType>>,
+  setStatsObject: Dispatch<SetStateAction<StatsObjectType>>,
+  resultsState: AudioDiskType[] // Pass current audio disks data
 ) {
   if (!audioEl) return;
 
@@ -234,6 +267,22 @@ export function handleTimeUpdate(
       JSON.stringify(updatedProgress)
     );
 
+    // Update stats in real-time
+    if (Array.isArray(resultsState)) {
+      // Create updated disks with new progress
+      const updatedDisks = resultsState.map(disk => ({
+        ...disk,
+        files: disk.files.map(file => ({
+          ...file,
+          progress: updatedProgress[file.path] ?? file.progress
+        }))
+      }));
+
+      // Recalculate stats
+      const newStats = calculateAudioStats(updatedDisks);
+      setStatsObject(newStats);
+    }
+
     return {
       ...prev,
       currentTime,
@@ -241,3 +290,29 @@ export function handleTimeUpdate(
     };
   });
 }
+
+// Calculate Stats Function
+const calculateAudioStats = (audioDisks: AudioDiskType[]): StatsObjectType => {
+  const totalFiles = audioDisks.reduce(
+    (acc: number, disk: AudioDiskType) => acc + disk.files.length,
+    0
+  );
+
+  const completedTracks = audioDisks
+    .flatMap(disk => disk.files)
+    .filter(file => file.progress >= 100).length;
+
+  const overallProgress = totalFiles > 0
+    ? Math.round(
+      audioDisks
+        .flatMap(disk => disk.files)
+        .reduce((sum, file) => sum + file.progress, 0) / totalFiles
+    )
+    : 0;
+
+  return {
+    totalFiles,
+    completedTracks,
+    overallProgress,
+  };
+};
