@@ -38,3 +38,7 @@ firestore-debug.log
 # Temporary files
 *.tmp
 *.temp
+**/tmp/
+
+# Confidential Files
+/scripts/*.json

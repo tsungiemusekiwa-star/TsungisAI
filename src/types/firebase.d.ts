@@ -1,5 +1,7 @@
 // Firebase module type declarations
 
+import type { ResultsStateType } from './revision-summaries.types';
+
 declare module '../firebase/auth.js' {
   import { User } from 'firebase/auth';
 
@@ -35,3 +37,4 @@ declare module '../firebase/audioService.js' {
     error: Error | null;
   }>;
 }
+

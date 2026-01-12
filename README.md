@@ -40,6 +40,7 @@ A modern, responsive web application for actuarial studies featuring audio learn
 - [x] Responsive mobile/desktop layout
 - [x] Audio player with keyboard shortcuts
 - [x] Firebase cloud storage integration
+- [x] Revision Summaries
 
 ### 🚧 Coming Soon
 - [ ] Acronym Generator
@@ -135,8 +136,9 @@ npm run dev
 
 ```
 src/
-├── components/           # Reusable UI components
+├── components/          # Reusable UI components
 │   ├── auth/            # Authentication components
+│   ├── revision-summaries/  # Revision Summaries components
 │   ├── AppLayout.tsx    # Main layout wrapper
 │   ├── AppSidebar.tsx   # Navigation sidebar
 │   └── MobileBottomNav.tsx
@@ -145,9 +147,11 @@ src/
 ├── firebase/            # Firebase configuration
 │   ├── config.js        # Firebase setup
 │   ├── auth.js          # Authentication functions
+│   ├── revisionSummaries.js     # Revision Summaries functions
 │   └── audioService.js  # Audio storage functions
 ├── pages/               # Page components
 │   ├── AudioLearning.tsx
+│   ├── RevisionSummaries.tsx
 │   └── Auth.tsx
 ├── styles/              # CSS styles
 │   └── tsungi.css       # Main stylesheet
