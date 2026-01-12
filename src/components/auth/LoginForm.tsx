@@ -43,13 +43,13 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToSignu
       const { user, error: signInError } = await signIn(formData.email, formData.password);
 
       if (signInError) {
-        setError(signInError.message);
+        setError("User not found.");
         return;
       }
 
       onSuccess?.();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An unexpected error occurred');
+      setError('An unexpected error occurred, please try again.');
     } finally {
       setLoading(false);
     }

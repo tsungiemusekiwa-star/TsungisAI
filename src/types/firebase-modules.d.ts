@@ -7,4 +7,10 @@ declare module "@/firebase/revisionSummaries.js" {
     ): Promise<
         AudioDiskType[]
     >;
+};
+
+declare module '@/firebase/revisionSummaries.js' {
+    export function getRevisionSummaries(
+        setResultsState: (state: ResultsStateType) => void
+    ): Promise<void>;
 }

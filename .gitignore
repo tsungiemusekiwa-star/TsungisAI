@@ -41,4 +41,8 @@ firestore-debug.log
 **/tmp/
 
 # Confidential Files
+<<<<<<< HEAD
 /scripts/*.json
+=======
+/scripts/*.json
+>>>>>>> fc064152cbf5d6df436ff94653a895e74e9df2d1
