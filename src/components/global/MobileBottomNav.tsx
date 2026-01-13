@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { coreMobileNavItems, otherFeatures } from '@/data/navigation.data';
 import { Link, useLocation } from 'react-router-dom';
+import { useTheme } from '@/contexts/ThemeContext';
+import type { NavItem } from '@/types/navigation.types';
 
 const getIcon = (iconName: string, isActive = false) => {
   const iconStyle = {
@@ -82,7 +84,18 @@ const getIcon = (iconName: string, isActive = false) => {
         <line x1="18" y1="6" x2="6" y2="18" />
         <line x1="6" y1="6" x2="18" y2="18" />
       </svg>
-    )
+    ),
+    moon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="icon-sm">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+      </svg>
+    ),
+    sun: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="icon-sm">
+        <circle cx="12" cy="12" r="5" />
+        <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
+      </svg>
+    ),
   };
   return icons[iconName as keyof typeof icons] || null;
 };
@@ -113,8 +126,8 @@ const NavLink = ({ item, isActive }: { item: any; isActive: boolean }) => {
   return (
     <Link to={item.href} className={isActive ? 'text-primary' : 'text-muted-foreground'} style={linkStyle}>
       {getIcon(item.icon, isActive)}
-      <span 
-        className={isActive ? 'text-primary' : 'text-muted-foreground'} 
+      <span
+        className={isActive ? 'text-primary' : 'text-muted-foreground'}
         style={textStyle}
       >
         {item.title}
@@ -127,6 +140,8 @@ export function MobileBottomNav() {
   const location = useLocation();
   const { signOut } = useAuth();
   const [isExpanded, setIsExpanded] = useState(false);
+  const { theme, setTheme } = useTheme();
+  const [navItems, setNavItems] = useState<NavItem[]>(coreMobileNavItems);
 
   const handleSignOut = async () => {
     try {
@@ -137,7 +152,14 @@ export function MobileBottomNav() {
   };
 
   const toggleMenu = () => {
-    setIsExpanded(!isExpanded);
+    if (!isExpanded) {
+      // Expand: add otherFeatures
+      setNavItems([...coreMobileNavItems, ...otherFeatures]);
+    } else {
+      // Collapse: remove otherFeatures, back to core items
+      setNavItems([...coreMobileNavItems]);
+    }
+    setIsExpanded(true);
   };
 
   const navStyle = {
@@ -149,90 +171,92 @@ export function MobileBottomNav() {
     backgroundColor: 'var(--background)',
     backdropFilter: 'blur(12px)',
     borderTop: '1px solid var(--border)',
-    display: 'none' // Hidden on desktop, show on mobile with CSS media query
-  };
-
-  const expandedSectionStyle = {
-    maxHeight: isExpanded ? '200px' : '0',
-    opacity: isExpanded ? 1 : 0,
-    overflow: 'hidden',
-    transition: 'max-height 0.3s ease-in-out, opacity 0.3s ease-in-out'
+    display: 'none', // Hidden on desktop, show on mobile with CSS media query
+    paddingTop: "6px",
   };
 
   return (
     <div className="mobile-bottom-nav" style={navStyle}>
+
+      {/* Navigate Sub Heading */}
+      {isExpanded && (
+        <div className='p-4'>
+          <h6 className='font-medium text-sm'>Navigate</h6>
+        </div>
+      )}
+
       {/* Main Nav - Core Features + Hamburger */}
-      <div className="flex items-center justify-around py-2 px-2" style={{ maxWidth: '448px', margin: '0 auto' }}>
-        {coreMobileNavItems.map((item) => {
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: `repeat(${isExpanded ? 5 : 6}, 1fr)`,
+        gap: '4px',
+      }}>
+        {navItems.map((item) => {
           const isActive = location.pathname === item.href;
           return <NavLink key={item.href} item={item} isActive={isActive} />;
         })}
 
         {/* Hamburger Menu Button */}
-        <button
-          onClick={toggleMenu}
-          className={isExpanded ? 'text-primary' : 'text-muted-foreground'}
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: '2px',
-            padding: '6px',
-            borderRadius: '8px',
-            transition: 'all 0.2s',
-            minWidth: '0',
-            flex: '1',
-            backgroundColor: isExpanded ? 'hsl(var(--primary) / 0.1)' : 'transparent',
-            border: 'none',
-            cursor: 'pointer'
-          }}
-        >
-          {getIcon(isExpanded ? 'close' : 'menu', isExpanded)}
-          <span style={{ fontSize: '10px', fontWeight: '500', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-            {isExpanded ? 'Close' : 'More'}
-          </span>
-        </button>
+        {!isExpanded && (
+          <button
+            onClick={toggleMenu}
+            className="flex flex-col items-center gap-1 p-2 rounded-lg text-muted-foreground"
+            style={{
+              minWidth: 0,
+              flex: 1,
+              transition: 'all 0.2s',
+              backgroundColor: 'transparent',
+              border: 'none',
+              cursor: 'pointer'
+            }}
+          >
+            {getIcon('menu')}
+            <span
+              style={{
+                fontSize: '10px',
+                fontWeight: '500',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap'
+              }}
+            >
+              More
+            </span>
+          </button>
+        )}
       </div>
 
-      {/* Expanded Section - Other Features */}
-      <div style={expandedSectionStyle}>
-        <div style={{ maxWidth: '448px', margin: '0 auto', padding: '8px', }}>
-          {/* Other Features + Logout Grid (4 columns) */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '4px' }}>
-            {otherFeatures.map((item) => {
-              const isActive = location.pathname === item.href;
-              return (
-                <Link
-                  key={item.href}
-                  to={item.href}
-                  className={isActive ? 'text-primary' : 'text-muted-foreground'}
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    gap: '2px',
-                    padding: '6px',
-                    borderRadius: '8px',
-                    transition: 'all 0.2s',
-                    textDecoration: 'none',
-                    backgroundColor: isActive ? 'hsl(var(--primary) / 0.1)' : 'transparent'
-                  }}
-                  onClick={() => setIsExpanded(false)}
-                >
-                  {getIcon(item.icon, isActive)}
-                  <span 
-                    className={isActive ? 'text-primary' : 'text-muted-foreground'}
-                    style={{
-                      fontSize: '10px',
-                      fontWeight: '500',
-                      textAlign: 'center'
-                    }}
-                  >
-                    {item.title}
-                  </span>
-                </Link>
-              );
-            })}
+      {/* Second Actions Sub Heading */}
+      {isExpanded && (
+        <div className='p-4 flex justify-between items-center'>
+          <h6 className='font-medium text-sm'>Actions</h6>
+        </div>
+      )}
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '4px' }}>
+        {isExpanded && (
+          <>
+            {/* Theme Switcher */}
+            <button
+              onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+              className="p-2 rounded-lg transition-all text-muted-foreground"
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: '2px',
+                padding: '6px',
+                borderRadius: '8px',
+                transition: 'all 0.2s',
+                backgroundColor: 'transparent',
+                border: 'none',
+                cursor: 'pointer'
+              }}
+              title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+            >
+              {getIcon(theme === 'light' ? 'moon' : 'sun')}
+              <span style={{ fontSize: '10px', fontWeight: '500' }}>Theme</span>
+            </button>
 
             {/* Logout Button - Same size as others */}
             <button
@@ -254,8 +278,10 @@ export function MobileBottomNav() {
               {getIcon('logout')}
               <span style={{ fontSize: '10px', fontWeight: '500' }}>Logout</span>
             </button>
-          </div>
-        </div>
+          </>
+        )
+
+        }
       </div>
     </div>
   );

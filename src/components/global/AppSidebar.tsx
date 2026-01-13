@@ -1,6 +1,5 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
-import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
 const sidebarItems = [
