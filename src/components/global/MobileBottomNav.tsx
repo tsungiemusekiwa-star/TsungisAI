@@ -152,14 +152,16 @@ export function MobileBottomNav() {
   };
 
   const toggleMenu = () => {
+    console.log("Is Expanded ?: ", isExpanded);
     if (!isExpanded) {
       // Expand: add otherFeatures
       setNavItems([...coreMobileNavItems, ...otherFeatures]);
+      setIsExpanded(true);
     } else {
       // Collapse: remove otherFeatures, back to core items
       setNavItems([...coreMobileNavItems]);
+      setIsExpanded(false);
     }
-    setIsExpanded(true);
   };
 
   const navStyle = {
@@ -173,10 +175,31 @@ export function MobileBottomNav() {
     borderTop: '1px solid var(--border)',
     display: 'none', // Hidden on desktop, show on mobile with CSS media query
     paddingTop: "6px",
+    paddingBottom: "10px"
   };
 
   return (
     <div className="mobile-bottom-nav" style={navStyle}>
+
+      {/* Close Button */}
+      {isExpanded &&
+        <div style={{ width: "100%", display: "flex", justifyContent: "flex-end", paddingRight: "8px" }}>
+          <button onClick={toggleMenu}
+            className={'text-primary'}
+            style={{
+              display: 'flex', flexDirection: 'column', alignItems: 'center',
+              gap: '2px', padding: '6px', border: "none",
+              backgroundColor: 'hsl(var(--primary) / 0.1)'
+            }} > {getIcon('close')}
+            <span style={{
+              fontSize: '10px', fontWeight: '500', overflow: 'hidden',
+              textOverflow: 'ellipsis', whiteSpace: 'nowrap'
+            }}>
+              Close
+            </span>
+          </button>
+        </div>
+      }
 
       {/* Navigate Sub Heading */}
       {isExpanded && (
@@ -189,7 +212,7 @@ export function MobileBottomNav() {
       <div style={{
         display: 'grid',
         gridTemplateColumns: `repeat(${isExpanded ? 5 : 6}, 1fr)`,
-        gap: '4px',
+        gap: `4px ${isExpanded && '6px'}`,
       }}>
         {navItems.map((item) => {
           const isActive = location.pathname === item.href;
