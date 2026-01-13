@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
-import { AppLayout } from './components/AppLayout';
-import { SplashScreen } from './components/SplashScreen';
-import { ComingSoon } from './components/ComingSoon';
+import { AppLayout } from './components/global/AppLayout';
+import { SplashScreen } from './components/global/SplashScreen';
+import { ComingSoon } from './components/global/ComingSoon';
 import Auth from './pages/Auth';
 import AudioLearning from './pages/AudioLearning';
 import AcronymGenerator from './pages/AcronymGenerator';
