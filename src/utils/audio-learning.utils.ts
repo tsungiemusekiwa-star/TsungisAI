@@ -16,7 +16,8 @@ export const DefaultPlayerStateValues: PlayerStateType = {
   })(),
   trackProgress: {},
   currentTrackPath: null,
-  currentFileUrl: null
+  currentFileUrl: null,
+  hasInitialSeek: false,
 };
 
 // Default Stats Values(Stats Cards)
@@ -29,7 +30,8 @@ export const DefaulStatsObject: StatsObjectType = {
 // Load and organize audio files from Firebase
 export const loadAudioFiles = async (
   setResultsState: (value: ResultsStateType<AudioDiskType[]>) => void,
-  setStatsObject: (value: StatsObjectType) => void
+  setStatsObject: (value: StatsObjectType) => void,
+  setPlayerState: Dispatch<React.SetStateAction<PlayerStateType>>
 ) => {
   try {
     const audioDisks: AudioDiskType[] = await fetchAllAudioFiles();
@@ -64,6 +66,12 @@ export const loadAudioFiles = async (
     setStatsObject(stats);
 
     setResultsState(hydratedDisks);
+
+    // Initialize playerState.trackProgress with loaded progress
+    setPlayerState(prev => ({
+      ...prev,
+      trackProgress: savedProgress
+    }));
   } catch (err) {
     console.error("Error fetching audio files", err);
     setResultsState("error");
@@ -133,26 +141,10 @@ export const handleLoadedMetadata = (
   setPlayerState: React.Dispatch<React.SetStateAction<PlayerStateType>>
 ): void => {
   if (!audioElement) return;
-
-  setPlayerState(prev => {
-    const duration = audioElement.duration;
-
-    // Get saved progress for current track
-    if (prev.currentTrackPath) {
-      const savedProgress = prev.trackProgress[prev.currentTrackPath] || 0;
-
-      // If there's saved progress and it's not complete, seek to that position
-      if (duration && savedProgress > 0 && savedProgress < 100) {
-        const startTime = (savedProgress / 100) * duration;
-        audioElement.currentTime = startTime;
-      }
-    }
-
-    return {
-      ...prev,
-      duration
-    };
-  });
+  setPlayerState(prev => ({
+    ...prev,
+    duration: audioElement.duration
+  }));
 };
 
 // Handle track completion and auto-play next track if available
@@ -223,7 +215,6 @@ export const handleAudioPlayback = (
   }
 };
 
-// Update Time Displayed & Handle Progress Tracking in LocalStorage
 // Update Time Displayed & Handle Progress Tracking in LocalStorage
 export function handleTimeUpdate(
   audioEl: HTMLAudioElement | null,
@@ -315,4 +306,41 @@ const calculateAudioStats = (audioDisks: AudioDiskType[]): StatsObjectType => {
     completedTracks,
     overallProgress,
   };
+};
+
+// Can play
+export const handleCanPlay = (
+  audioElement: HTMLAudioElement | null,
+  playerState: PlayerStateType,
+  setPlayerState: React.Dispatch<React.SetStateAction<PlayerStateType>>
+): void => {
+  console.log('🎵 handleCanPlay fired');
+  console.log('hasInitialSeek:', playerState.hasInitialSeek);
+  console.log('currentTrackPath:', playerState.currentTrackPath);
+  console.log('trackProgress:', playerState.trackProgress);
+
+  if (!audioElement || playerState.hasInitialSeek) {
+    console.log('❌ Returning early:', {
+      noAudio: !audioElement,
+      alreadySeeked: playerState.hasInitialSeek
+    });
+    return;
+  }
+
+  if (playerState.currentTrackPath) {
+    const savedProgress = playerState.trackProgress[playerState.currentTrackPath] || 0;
+    console.log('savedProgress for', playerState.currentTrackPath, ':', savedProgress);
+
+    if (savedProgress > 0 && savedProgress < 100) {
+      const startTime = (savedProgress / 100) * audioElement.duration;
+      console.log('🎯 Seeking to:', startTime, 'seconds (', savedProgress, '%)');
+      audioElement.currentTime = startTime;
+    }
+
+    setPlayerState(prev => ({
+      ...prev,
+      hasInitialSeek: true
+    }));
+    console.log('✅ Set hasInitialSeek to true');
+  }
 };

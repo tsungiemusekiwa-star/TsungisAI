@@ -69,6 +69,7 @@ const AudioDisks = ({ disks, toggleDiskExpansion, expandedDisks, playerState, se
                           currentFileUrl: file.url,
                           currentTrack: trackIndex,
                           isPlaying: true,
+                          hasInitialSeek: false,
                         }));
                       }}
                     >

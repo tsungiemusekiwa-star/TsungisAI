@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { type PlayerStateType, type AudioDiskType, type StatsObjectType } from '@/types/audio-learning.types.js';
 import type { ResultsStateType } from '@/types/shared.types.js';
-import { audioControls, DefaulStatsObject, DefaultPlayerStateValues, getCurrentAudioFile, handleAudioPlayback, handleEnded, handleLoadedMetadata, handleTimeUpdate, loadAudioFiles, toggleDiskExpansion } from '@/utils/audio-learning.utils.js';
+import { audioControls, DefaulStatsObject, DefaultPlayerStateValues, getCurrentAudioFile, handleAudioPlayback, handleCanPlay, handleEnded, handleLoadedMetadata, handleTimeUpdate, loadAudioFiles, toggleDiskExpansion } from '@/utils/audio-learning.utils.js';
 import AudioDisks from '@/components/audio-learning/AudioDisks';
 import AudioPlayer from '@/components/audio-learning/AudioPlayer';
 import ErrorUI from '@/components/audio-learning/ErrorUI';
@@ -17,7 +17,7 @@ const AudioLearning = () => {
 
   // Load audio files from Firebase on component mount
   useEffect(() => {
-    loadAudioFiles(setResultsState, setStatsObject);
+    loadAudioFiles(setResultsState, setStatsObject, setPlayerState);
   }, []);
 
   // Handle play/pause state changes
@@ -86,7 +86,12 @@ const AudioLearning = () => {
       <LoadingUI resultsState={resultsState} />
 
       {/* Error state */}
-      <ErrorUI resultsState={resultsState} setResultsState={setResultsState} loadAudioFiles={loadAudioFiles} setStatsObject={setStatsObject} />
+      <ErrorUI resultsState={resultsState}
+        setResultsState={setResultsState}
+        loadAudioFiles={loadAudioFiles}
+        setStatsObject={setStatsObject}
+        setPlayerState={setPlayerState}
+      />
 
       {/* Audio Files Successfully Returned */}
       {Array.isArray(resultsState) && resultsState.length > 0 && (
@@ -104,10 +109,10 @@ const AudioLearning = () => {
                 src={playerState.currentFileUrl || undefined}
                 onTimeUpdate={() => handleTimeUpdate(audioRef.current, setPlayerState, setStatsObject, resultsState)}
                 onLoadedMetadata={() => handleLoadedMetadata(audioRef.current, setPlayerState)}
+                onCanPlay={() => handleCanPlay(audioRef.current, playerState, setPlayerState)}
                 onEnded={() => handleEnded(resultsState, playerState, setPlayerState)}
                 onError={(e) => {
-                  console.error("Audio error:", e);
-                  console.error("Failed src:", playerState.currentFileUrl);
+                  console.error("Failed to play audio: ", playerState.currentFileUrl);
                 }}
               />
 

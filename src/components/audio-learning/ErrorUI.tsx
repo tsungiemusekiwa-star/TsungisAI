@@ -1,14 +1,16 @@
-import type { AudioDiskType, StatsObjectType } from "@/types/audio-learning.types";
+import type { AudioDiskType, PlayerStateType, StatsObjectType } from "@/types/audio-learning.types";
 import type { ResultsStateType } from "@/types/shared.types";
+import type { Dispatch } from "react";
 
 interface ErrorUIProps {
     resultsState: ResultsStateType<AudioDiskType[]>;
-    loadAudioFiles: (setResultsState: (value: ResultsStateType<AudioDiskType[]>) => void, setStatsObject: (value: StatsObjectType) => void) => void;
+    loadAudioFiles: (setResultsState: (value: ResultsStateType<AudioDiskType[]>) => void, setStatsObject: (value: StatsObjectType) => void, setPlayerState: Dispatch<React.SetStateAction<PlayerStateType>>) => void;
     setResultsState: (value: ResultsStateType<AudioDiskType[]>) => void,
-    setStatsObject: (value: StatsObjectType) => void
+    setStatsObject: (value: StatsObjectType) => void,
+    setPlayerState: Dispatch<React.SetStateAction<PlayerStateType>>
 }
 
-const ErrorUI = ({ resultsState, loadAudioFiles, setResultsState, setStatsObject }: ErrorUIProps) => {
+const ErrorUI = ({ resultsState, loadAudioFiles, setResultsState, setStatsObject, setPlayerState }: ErrorUIProps) => {
     return (
         <>
             {resultsState === "error" && (
@@ -21,7 +23,7 @@ const ErrorUI = ({ resultsState, loadAudioFiles, setResultsState, setStatsObject
                         </svg>
                         <span>An unexpected error occurred</span>
                     </div>
-                    <button onClick={() => loadAudioFiles(setResultsState, setStatsObject)} className="btn btn-primary w-full">
+                    <button onClick={() => loadAudioFiles(setResultsState, setStatsObject, setPlayerState)} className="btn btn-primary w-full">
                         <svg className="icon-sm mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <polyline points="23,4 23,10 17,10" />
                             <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />

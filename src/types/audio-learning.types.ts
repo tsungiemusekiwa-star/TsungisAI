@@ -30,6 +30,7 @@ export type PlayerStateType = {
   duration: number;
   volume: number;
   trackProgress: { [trackId: string]: number };
+  hasInitialSeek: boolean;
 };
 
 // Audio Controls Object Type
