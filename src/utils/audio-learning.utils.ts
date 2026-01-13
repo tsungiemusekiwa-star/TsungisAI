@@ -314,26 +314,16 @@ export const handleCanPlay = (
   playerState: PlayerStateType,
   setPlayerState: React.Dispatch<React.SetStateAction<PlayerStateType>>
 ): void => {
-  console.log('🎵 handleCanPlay fired');
-  console.log('hasInitialSeek:', playerState.hasInitialSeek);
-  console.log('currentTrackPath:', playerState.currentTrackPath);
-  console.log('trackProgress:', playerState.trackProgress);
 
   if (!audioElement || playerState.hasInitialSeek) {
-    console.log('❌ Returning early:', {
-      noAudio: !audioElement,
-      alreadySeeked: playerState.hasInitialSeek
-    });
     return;
   }
 
   if (playerState.currentTrackPath) {
     const savedProgress = playerState.trackProgress[playerState.currentTrackPath] || 0;
-    console.log('savedProgress for', playerState.currentTrackPath, ':', savedProgress);
 
     if (savedProgress > 0 && savedProgress < 100) {
       const startTime = (savedProgress / 100) * audioElement.duration;
-      console.log('🎯 Seeking to:', startTime, 'seconds (', savedProgress, '%)');
       audioElement.currentTime = startTime;
     }
 
@@ -341,6 +331,5 @@ export const handleCanPlay = (
       ...prev,
       hasInitialSeek: true
     }));
-    console.log('✅ Set hasInitialSeek to true');
   }
 };
