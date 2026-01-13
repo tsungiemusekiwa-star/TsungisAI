@@ -1,10 +1,11 @@
-import type { ResultsStateType } from '@/types/revision-summaries.types';
 import { useEffect, useState } from 'react';
 import { FileViewer } from '@/components/revision-summaries/file-viewer';
 import { getRevisionSummaries } from '@/firebase/revisionSummaries.js';
+import type { ResultsStateType } from '@/types/shared.types';
+import type { RevisionSummaryType } from '@/types/revision-summaries.types';
 
 const RevisionSummaries = () => {
-    const [resultsState, setResultsState] = useState<ResultsStateType>("loading");
+    const [resultsState, setResultsState] = useState<ResultsStateType<RevisionSummaryType>>("loading");
     const [showFile, setShowFile] = useState<boolean>(false);
 
     const fetchRevisionSummaries = () => {
