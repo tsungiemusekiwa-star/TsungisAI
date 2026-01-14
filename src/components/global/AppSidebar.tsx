@@ -58,7 +58,7 @@ export function AppSidebar({ className = '' }: AppSidebarProps) {
           const isActive = location.pathname === item.href;
 
           const linkClass = `
-            group flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition-all no-underline
+            group flex items-center gap-3 rounded-xl px-3 py-2 text-xs transition-all no-underline
             ${isActive
               ? 'bg-primary text-primary-foreground shadow-card'
               : 'text-foreground hover:bg-muted'

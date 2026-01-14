@@ -19,7 +19,7 @@ const UserProfileSection = () => {
         : 'U';
 
     return (
-        <div className="p-4 border-t border">
+        <div className="p-3 border-t border">
             <div className="flex items-center gap-3 mb-3">
                 <div
                     className="rounded-full flex items-center justify-center bg-primary text-primary-foreground font-semibold"
@@ -28,7 +28,7 @@ const UserProfileSection = () => {
                     {initials}
                 </div>
                 <div className="flex-1" style={{ minWidth: '0' }}>
-                    <p className="text-sm font-medium text-foreground" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <p className="text-xs font-medium text-foreground" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {profile.full_name}
                     </p>
                     <p className="text-xs text-muted-foreground" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -38,7 +38,7 @@ const UserProfileSection = () => {
             </div>
             <button
                 onClick={handleSignOut}
-                className="btn btn-ghost w-full flex items-center justify-start gap-2"
+                className="btn btn-ghost w-full flex items-center justify-start gap-2 text-xs"
             >
                 {getIcon('logout')}
                 Sign Out

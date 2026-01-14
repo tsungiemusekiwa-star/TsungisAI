@@ -32,7 +32,7 @@ export const sidebarItems: NavItem[] = [
         title: 'Flash Cards',
         href: '/flash-cards',
         icon: 'cards',
-        description: 'Description here'
+        description: 'Knowledge Reinforcement'
     },
     {
         title: 'Revision Summaries',

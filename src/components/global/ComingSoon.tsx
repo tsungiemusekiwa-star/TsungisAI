@@ -82,14 +82,14 @@ export const ComingSoon: React.FC<ComingSoonProps> = ({
             {icon}
           </div>
 
-          <h1 className="text-4xl font-bold text-foreground">
+          <h1 className="text-3xl font-bold text-foreground">
             {title}
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto" style={{ lineHeight: '1.75' }}>
             {description}
           </p>
 
-          <div className="flex justify-center mt-6">
+          <div className="flex justify-center mt-6 mb-6">
             <div
               className="badge px-6 py-2 text-sm font-medium flex items-center gap-2"
               style={{
@@ -99,8 +99,8 @@ export const ComingSoon: React.FC<ComingSoonProps> = ({
               }}
             >
               <svg className="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="12" cy="12" r="10"/>
-                <path d="M12 6v6l4 2"/>
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 6v6l4 2" />
               </svg>
               Coming {estimatedDate}
             </div>
@@ -111,11 +111,11 @@ export const ComingSoon: React.FC<ComingSoonProps> = ({
         <div style={mainCardStyle} className="text-center">
           <div style={constructionIconStyle}>
             <svg className="icon-lg text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M2 20h20"/>
-              <path d="M7 16v4"/>
-              <path d="M12 16v4"/>
-              <path d="M17 16v4"/>
-              <path d="M2 16l20-10"/>
+              <path d="M2 20h20" />
+              <path d="M7 16v4" />
+              <path d="M12 16v4" />
+              <path d="M17 16v4" />
+              <path d="M2 16l20-10" />
             </svg>
           </div>
 
@@ -131,15 +131,16 @@ export const ComingSoon: React.FC<ComingSoonProps> = ({
             <div className="mb-8">
               <h3 className="text-xl font-bold text-foreground mb-4 flex items-center justify-center gap-2">
                 <svg className="icon-md text-warning" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
-                  <path d="M5 3v4"/>
-                  <path d="M19 17v4"/>
-                  <path d="M3 5h4"/>
-                  <path d="M17 19h4"/>
+                  <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
+                  <path d="M5 3v4" />
+                  <path d="M19 17v4" />
+                  <path d="M3 5h4" />
+                  <path d="M17 19h4" />
                 </svg>
                 What to Expect
               </h3>
-              <div className="grid gap-3 max-w-md mx-auto">
+
+              <div className="grid gap-3 mx-auto mb-4">
                 {features.map((feature, index) => (
                   <div key={index} style={featureCardStyle} className="text-left">
                     <p className="text-foreground text-sm">{feature}</p>
@@ -152,7 +153,7 @@ export const ComingSoon: React.FC<ComingSoonProps> = ({
           {/* Back Button */}
           <Link to="/" style={buttonStyle}>
             <svg className="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <polyline points="15,18 9,12 15,6"/>
+              <polyline points="15,18 9,12 15,6" />
             </svg>
             Back to Audio Learning
           </Link>
