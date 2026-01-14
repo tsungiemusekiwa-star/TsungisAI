@@ -135,6 +135,18 @@ const icons: Record<IconName, IconFactory> = {
             <rect x="7" y="7" width="14" height="14" rx="2" ry="2" />
         </svg>
     ),
+    chevronRight: () => (
+        <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            className="icon-sm"
+            style={{ opacity: 0.7 }}
+        >
+            <polyline points="9,18 15,12 9,6" />
+        </svg>
+    ),
 };
 
 export const getIcon = (
