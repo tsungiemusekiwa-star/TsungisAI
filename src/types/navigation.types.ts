@@ -11,10 +11,13 @@ export type IconName =
     | "menu"
     | "close"
     | "sun"
-    | "moon";
+    | "moon"
+    | "cards"
+    | "chevronRight"
 
 export type NavItem = {
     title: string;
     href: string;
     icon: IconName;
+    description?: string;
 };
