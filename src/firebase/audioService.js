@@ -67,7 +67,7 @@ export const uploadAudioFile = async (file, path) => {
 };
 
 // Main function: fetch all disks and their audio files
-export const fetchAllAudioFiles = async (basePath = "CA1 Sound Revision") => {
+export const fetchAllAudioFiles = async (basePath = "A311 Sound Revision") => {
   try {
     // Get all top-level “disk” folders dynamically
     const baseRef = ref(storage, basePath);
@@ -97,7 +97,7 @@ export const fetchAllAudioFiles = async (basePath = "CA1 Sound Revision") => {
             disk: displayDisk,
             title,
             trackNumber,
-            category: "CA1",
+            category: "A311",
             progress: 0,
           };
         })

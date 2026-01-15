@@ -11,7 +11,7 @@ const LOCAL_PATH = "./tmp/CA1 Sound Revision/Disk 5";
 // For a folder, just put the folder path like "../tmp/my-folder"
 
 // Firebase Storage folder
-const STORAGE_DIR = "CA1 Sound Revision/Disk 5"; // <-- Change this to your desired storage folder
+const STORAGE_DIR = "A311 Sound Revision/Disk 5"; // <-- Change this to your desired storage folder
 
 // Allowed file extensions
 const ALLOWED_EXTENSIONS = [".xlsx", ".pdf", ".mp3"]; // <-- Change to any file types you want

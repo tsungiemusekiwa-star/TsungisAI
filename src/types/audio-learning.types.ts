@@ -11,7 +11,7 @@ export interface AudioFileType {
   trackNumber: string;
   duration?: number;
   progress: number;
-  category: 'CA1';
+  category: 'A311';
 }
 
 // Audio Disk(contains .mp3 files) type
