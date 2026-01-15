@@ -7,7 +7,6 @@ import AudioPlayer from '@/components/audio-learning/AudioPlayer';
 import ErrorUI from '@/components/audio-learning/ErrorUI';
 import LoadingUI from '@/components/audio-learning/LoadingUI';
 import StatsCards from '@/components/audio-learning/StatsCards';
-import { Helmet } from 'react-helmet';
 
 const AudioLearning = () => {
   const [resultsState, setResultsState] = useState<ResultsStateType<AudioDiskType[]>>("loading");
@@ -76,11 +75,6 @@ const AudioLearning = () => {
 
   return (
     <div className="space-y-4 md:space-y-6" style={{ width: '100%', maxWidth: 'none' }}>
-      {/* Tile & Meta Data */}
-      <Helmet>
-        <title>Audio | Tsungi's AI</title>
-      </Helmet>
-
       {/* Header */}
       <div className="text-center space-y-2">
         <h1 className="text-2xl md:text-4xl font-bold gradient-text">
