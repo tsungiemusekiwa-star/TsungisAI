@@ -7,27 +7,33 @@
 // import '../styles/flashcard.css';
 
 import { ComingSoon } from "@/components/global/ComingSoon";
+import { useLayoutEffect } from "react";
 
-const AcronymGenerator = () => (
-  <ComingSoon
-    title="Acronyms"
-    description="Master all 33 A311 acronyms with interactive flashcards. Guess the acronym, flip to check your answer!"
-    icon={
-      <svg className="icon-lg text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
-      >
-        <path d="M9 21H15M12 17L12 21M12 3a6 6 0 0 1 6 6c0 3-2 5.5-2 8H8c0-2.5-2-5-2-8a6 6 0 0 1 6-6Z" />
-      </svg>
-    }
-    features={[
-      "Prebuilt acronyms by chapter",
-      "Instant acronyms definitions",
-      "Context-aware explanations",
-      "Smart repetiion for retentions"
-    ]}
-    estimatedDate="Q1 2026"
-  />
-);
-
+const AcronymGenerator = () => {
+  useLayoutEffect(() => {
+    document.title = "Acronyms | Tsungi's AI";
+  }, []);
+  return (
+    <>
+      <ComingSoon
+        title="Acronyms"
+        description="Master all 33 A311 acronyms with interactive flashcards. Guess the acronym, flip to check your answer!"
+        icon={
+          <svg className="icon-lg text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+          >
+            <path d="M9 21H15M12 17L12 21M12 3a6 6 0 0 1 6 6c0 3-2 5.5-2 8H8c0-2.5-2-5-2-8a6 6 0 0 1 6-6Z" />
+          </svg>
+        }
+        features={[
+          "Prebuilt acronyms by chapter",
+          "Instant acronyms definitions",
+          "Context-aware explanations",
+          "Smart repetiion for retentions"
+        ]}
+        estimatedDate="Q1 2026"
+      />
+    </>)
+};
 export default AcronymGenerator;
 
 // CA1 Acronym Library Data

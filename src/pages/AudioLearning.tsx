@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef, useMemo, useLayoutEffect } from 'react';
 import { type PlayerStateType, type AudioDiskType, type StatsObjectType } from '@/types/audio-learning.types.js';
 import type { ResultsStateType } from '@/types/shared.types.js';
 import { audioControls, DefaulStatsObject, DefaultPlayerStateValues, getCurrentAudioFile, handleAudioPlayback, handleCanPlay, handleEnded, handleLoadedMetadata, handleTimeUpdate, loadAudioFiles, toggleDiskExpansion } from '@/utils/audio-learning.utils.js';
@@ -7,6 +7,7 @@ import AudioPlayer from '@/components/audio-learning/AudioPlayer';
 import ErrorUI from '@/components/audio-learning/ErrorUI';
 import LoadingUI from '@/components/audio-learning/LoadingUI';
 import StatsCards from '@/components/audio-learning/StatsCards';
+import { Helmet } from 'react-helmet';
 
 const AudioLearning = () => {
   const [resultsState, setResultsState] = useState<ResultsStateType<AudioDiskType[]>>("loading");
@@ -14,6 +15,10 @@ const AudioLearning = () => {
   const [expandedDisks, setExpandedDisks] = useState<{ [key: string]: boolean }>({});
   const audioRef = useRef<HTMLAudioElement>(null);
   const [statsObject, setStatsObject] = useState<StatsObjectType>(DefaulStatsObject);
+
+  useLayoutEffect(() => {
+    document.title = "Audio | Tsungi's AI";
+  }, []);
 
   // Load audio files from Firebase on component mount
   useEffect(() => {
@@ -71,6 +76,10 @@ const AudioLearning = () => {
 
   return (
     <div className="space-y-4 md:space-y-6" style={{ width: '100%', maxWidth: 'none' }}>
+      {/* Tile & Meta Data */}
+      <Helmet>
+        <title>Audio | Tsungi's AI</title>
+      </Helmet>
 
       {/* Header */}
       <div className="text-center space-y-2">

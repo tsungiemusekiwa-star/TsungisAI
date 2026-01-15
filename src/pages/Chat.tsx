@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useLayoutEffect, useState } from 'react';
 import {
   CometChatConversations,
   CometChatUsers,
@@ -18,6 +18,10 @@ const Chat = () => {
     setShowUserList(false);
   };
 
+  useLayoutEffect(() => {
+    document.title = "Chat | Tsungi's AI";
+  }, []);
+
   const handleBackToConversations = () => {
     setSelectedUser(undefined);
   };
@@ -31,6 +35,7 @@ const Chat = () => {
 
   return (
     <div className="container mx-auto h-full p-0" style={{ position: 'relative' }}>
+
       <div className="card h-full" style={{ height: 'calc(100vh - 120px)' }}>
         <div className="card-content p-0 h-full">
           {selectedUser ? (

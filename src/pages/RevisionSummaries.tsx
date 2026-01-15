@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import { FileViewer } from '@/components/revision-summaries/file-viewer';
 import { getRevisionSummaries } from '@/firebase/revisionSummaries.js';
 import type { ResultsStateType } from '@/types/shared.types';
@@ -7,6 +7,10 @@ import type { RevisionSummaryType } from '@/types/revision-summaries.types';
 const RevisionSummaries = () => {
     const [resultsState, setResultsState] = useState<ResultsStateType<RevisionSummaryType>>("loading");
     const [showFile, setShowFile] = useState<boolean>(false);
+
+    useLayoutEffect(() => {
+        document.title = "Revision | Tsungi's AI";
+    }, []);
 
     const fetchRevisionSummaries = () => {
         setResultsState("loading");
@@ -19,6 +23,7 @@ const RevisionSummaries = () => {
 
     return (
         <div className="space-y-4 md:space-y-6" style={{ width: '100%', maxWidth: 'none' }}>
+            
             {/* Header */}
             <div className="text-center space-y-2">
                 <h1 className="text-2xl md:text-4xl font-bold gradient-text">

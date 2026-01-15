@@ -1,24 +1,34 @@
 import { ComingSoon } from "@/components/global/ComingSoon";
+import { useLayoutEffect } from "react";
 
-const StudyBuddy = () => (
-    <ComingSoon
-        title="Study Buddy"
-        description="Connect with fellow actuarial students for collaborative learning sessions, group study planning, and peer support throughout your journey."
-        icon={
-            <svg className="icon-lg text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                <circle cx="9" cy="7" r="4" />
-                <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
-            </svg>
-        }
-        features={[
-            "Smart buddy matching",
-            "Virtual study rooms",
-            "Progress sharing",
-            "Study schedule coordination"
-        ]}
-        estimatedDate="Q2 2026"
-    />
-);
+const StudyBuddy = () => {
+
+    useLayoutEffect(() => {
+        document.title = "Study Buddy - Tsungi's AI";
+    }, []);
+
+    return (
+        <>
+            <ComingSoon
+                title="Study Buddy"
+                description="Connect with fellow actuarial students for collaborative learning sessions, group study planning, and peer support throughout your journey."
+                icon={
+                    <svg className="icon-lg text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                        <circle cx="9" cy="7" r="4" />
+                        <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+                    </svg>
+                }
+                features={[
+                    "Smart buddy matching",
+                    "Virtual study rooms",
+                    "Progress sharing",
+                    "Study schedule coordination"
+                ]}
+                estimatedDate="Q2 2026"
+            />
+        </>
+    )
+};
 
 export default StudyBuddy;
